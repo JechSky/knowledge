@@ -1,0 +1,4661 @@
+Enjoy code,enjoy life.
+
+
+CLR -- 将C#代码编译成IL代码，生成程序集。
+CLR -- 
+1、加载程序集，加载程序集里所有的类。
+2、找程序集里的Main方法，然后开始运行。
+
+
+类的加载 : 指的是将类的.class文件中的二进制数据读入到内存中 , 将其放在运行时数据区的方法区内 , 
+然后再堆区创建一个java.lang.Class对象 , 用来封装类在方法区内的数据结构;
+反射 : 反射就是根据堆区的字节码文件 , 获取方法区的数据结构;
+解析 : Class对象是由JVM自己创建的 , 所有的对象都是经过Class对象创建 , 
+这个Class对象是反射的入口 , 通过Class对象 , 可以关联到目标class字节码文件的内部结构 ;
+
+
+类：
+单根性：一个类只能有一个父类。
+部分类：partial将类、结构、接口、方法的定义拆分到两个或多个文件中。同一程序集中关键字不得相冲。
+密封类：sealed不能被其他类继承，但可以继承其他类。不能用作基类，因此不能是抽象。防止派生。
+
+
+
+项目属性--生成事件--后期生成事件命令行（xcopy ） 项目生成后可直接拷贝到发布的网站，即可访问该网站。
+
+面向接口编程
+依赖接口不依赖具体实现
+
+
+---------------------------------------数据结构 s---------------------------------------
+
+哈夫曼树
+路径：从树种的一个结点到另一个结点之间的分支构成这两个结点间的路径。
+路径长度：路径上的分支数。
+树的路径长度：从树的根结点到每个结点的路径长度之和。在结点数目相同的二叉树中，完全二叉树的路径长度最短。
+结点的权：在一些应用中，赋予树种结点的一个有实际意义的数。
+结点的带权路径长度：从该结点到树的根结点的路径长度与该结点的权的乘积。
+树的带权路径长度：树中所有叶子结点的带权路径长度之和。
+
+哈夫曼树：最优二叉树。指对于一组具有确定权值的叶子结点的具有最小带权路径长度的二叉树。
+
+
+
+
+---------------------------------------数据结构 e---------------------------------------
+
+---------------------------------------算法 s---------------------------------------
+
+算法复杂度：
+时间复杂度：算法运行需要消耗的时间的数量级。
+空间复杂度：算法运行需要消耗的内存的数量级。
+消耗的时间或者内存随着问题规模的扩大而成正比增加，就是O(n)。
+消耗的时间或者内存随着问题规模的扩大而不变，就是O(1)。
+消耗的时间或者内存随着问题规模的扩大而n*n增加，就是O(n*n)
+
+算法复杂度只考虑最差情况（从一个数组中找出第一个大于10的数，时间复杂度为O(n)），并且算法复杂度忽略常量和低阶。把数组数一遍和数两遍的时间复杂度都是O(n)。把长度为n的数组数n/2遍的时间复杂度还是O(n*n)。
+
+
+树的广度优先遍历
+private void PrintNodeWidthFirst(IEnumerable<TreeNode> treenodes)
+        {
+            //要遍历的下级节点
+            List<TreeNode> listNodes = new List<TreeNode>();
+            foreach (TreeNode childNode in treenodes)
+            {
+                //如果节点有子节点则将子节点加入listNodes以备稍后遍历
+                if (childNode.Nodes.Count > 0)
+                {
+                    listNodes.AddRange(childNode.Nodes.OfType<TreeNode>());
+                }
+                textBox1.AppendText(childNode.Text + "\r\n");
+            }
+            //如果有待遍历的子节点
+            if (listNodes.Count > 0)
+            {
+                PrintNodeWidthFirst(listNodes);
+            }
+        }
+
+
+---------------------------------------算法 e---------------------------------------
+
+锁的问题：
+       public void Test(int i)
+        {
+            lock (this)
+            {
+                if (i > 10)
+                {
+                    i--;
+                    Test(i);
+                }
+            }
+        }
+	执行Test(10)是否会造成死锁？
+答：不会，因为多线程才有锁的问题，线程无法自己锁自己（单线程必然是有先后执行顺序的，没必要锁）
+
+
+
+Math.Round(11.5)、Math.Round(11.3)、Math.Round(-11.5)、Math.Round(-11.3)的值各是多少？
+答案：Round 四舍五入：Math.Round(-11.5)=-12，因为是按照绝对值考虑。
+扩展：Math.Ceiling(-11.6)=-11，因为负数的天花板也在上面。
+Math.Floor(-11.5)=-12
+
+
+Math.Ceiling(count/(double)pagesize)
+Math.Max((count + pageSize - 1) / pageSize, 1);
+
+
+
+short s=1;s=s+1;有错吗？
+short s=1;s+=1;有错吗？
+答案：第一个有错，因为1是int类型，int+short结果是int，无法隐式转换，改为s = (short)(s + 1);就可以了。
+第二个没错，经过反编译发现编译器自动优化成s = (short)(s + 1);
+
+
+
+产生一个int数组，长度为100，并向其中随机插入1-100，并且不能重复。（要求使用两种方法）
+
+解答：Random类是一个伪随机数算法，原理：
+r(n)=(sed+r(n-1))%100;
+    class MyRand
+    {
+        private int seed;
+        private int prevNumber = 10;
+        public MyRand(int seed)
+        {
+            this.seed = seed;
+        }
+
+        public int Next()
+        {
+            int newRand = (seed + prevNumber) % 100;
+            prevNumber = newRand;
+            return newRand;
+        }
+    }
+生成的随机数是依赖于上一个的，所以叫“随机数序列”。确定的种子产生确定的随机数序列。
+为了避免每次生成的随机数序列都一样，所以一般采用当前系统运行的毫秒数Environment.TickCount做种子。
+这就明白为什么
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Random rand = new Random();
+            //    Console.WriteLine(rand.Next(100));
+            //}
+是错的。
+经过反编译，Random类的无参构造函数最终也是调用有参的，传递的就是当前毫秒数
+public Random() : this(Environment.TickCount)
+这就验证了
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Random rand = new Random();
+            //    Console.WriteLine(rand.Next(100));
+            //}
+为什么一样，或者一半一样，是因为在同一毫秒内。
+
+
+做法1：
+            List<int> list = new List<int>();
+            Random rand = new Random();
+            while (list.Count < 100)
+            {
+                int number = rand.Next(1, 101);//>=1,<101
+                if (!list.Contains(number))//如果list中已经含有这个数，则不插入
+                {
+                    list.Add(number);
+                }
+            }
+
+            foreach (int i in list)
+            {
+                Console.WriteLine(i);
+            }
+
+做法2：
+先把1-100这100个数按顺序放入数组arr，再重复100次下面的操作，生成两个介于 >=0,<100 之间的随机数m、n，颠倒arr[m]和arr[n]的数。
+
+            int[] arr = new int[100];
+            //把100个数顺序放入
+            for (int i = 0; i < 100; i++)
+            {
+                arr[i] = i + 1;
+            }
+
+            Random rand = new Random();
+            for (int i = 0; i < 100; i++)
+            {
+                //随机生成两个位置
+                int m = rand.Next(0, 100);
+                int n = rand.Next(0, 100);
+
+                //颠倒两个位置
+                int temp = arr[m];
+                arr[m] = arr[n];
+                arr[n] = temp;
+            }
+效率比第一种高的多，这个只需要N次，而上一种至少需要N*N次
+
+
+ private string RndNum(int VcodeNum)
+        {
+            string Vchar = "0,1,2,3,4,5,6,7,8,9";
+            string[] VcArray = Vchar.Split(',');
+            string VNum = ""; //由于字符串很短，就不用StringBuilder了
+            int temp = -1; //记录上次随机数值，尽量避免生产几个一样的随机数
+
+            //采用一个简单的算法以保证生成随机数的不同
+            Random rand = new Random();
+            for (int i = 1; i < VcodeNum + 1; i++)
+            {
+                if (temp != -1)
+                {
+                    rand = new Random(i * temp * unchecked((int)DateTime.Now.Ticks));
+                }
+                int t = rand.Next(VcArray.Length);
+                if (temp != -1 && temp == t)
+                {
+                    return RndNum(VcodeNum);
+                }
+                temp = t;
+                VNum += VcArray[t];
+            }
+            return VNum;
+        }
+
+
+
+
+
+子类静态变量
+子类静态初始化块
+子类变量
+父类静态变量
+父类静态初始化块
+父类变量
+父类构造器
+子类构造器
+
+
+
+Array.Sort(vv, string.CompareOrdinal); //ASCII排序
+
+
+读取Configuration
+ConfigurationManager.ConnectionStrings[connectionName].ConnectionString.ToString();
+
+
+using System.Configuration;
+string conStr = string.Format("Server={0};Database={1};uid={2}; pwd = {3}", dataBaseService, dataBase, uid, pwd);
+OperaConfig.UpdateConnectionStringsConfig("test", conStr.Trim(), "System.Data.SqlClient");
+
+public static void UpdateConnectionStringsConfig(string newName, string newConString, string newProviderName)
+{
+	Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+	config.ConnectionStrings.ConnectionStrings[newName].ConnectionString = newConString;
+	config.Save(ConfigurationSaveMode.Modified);
+	ConfigurationManager.RefreshSection("connectionStrings");
+}
+
+
+
+Point pt = this.dgvTbList.PointToClient(Control.MousePosition);
+DataGridView.HitTestInfo info = this.dgvTbList.HitTest(pt.X, pt.Y);
+if (info.Type != DataGridViewHitTestType.ColumnHeader)
+{} 
+
+DateTime.DayOfWeek 返回的是 DayOfWeek 枚举常数，是英文的.
+要得到本地语言显示值可使用 System.Globalization 命名空间中的 CultureInfo 类
+代码断：
+System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(DateTime.Today.DayOfWeek)
+
+
+
+==比较时
+1、如果比较的是值类型，则比较两个对象的值。
+2、如果比较的是引用类型，则比较两个对象的引用是否相同。
+Equals
+1、此方是object类里的虚方法，默认用==进行比较。
+2、但是大部分微软的类及用户自定义的类都重写了该虚方法，也就是微软和用户各自为自己编写的object的子类定义了相等比较规则。
+
+
+            //字符串恒定性：当字符串在内存中已经被创建后，程序员再次创建相同值的字符串对象时，clr做了优化，直接把第一个字符串的引用赋给了第二个变量。
+            //string str2 = str + str1;
+            //string str4 = "123" + "45";
+            //注意：如果代码里是直接将两个字符串相加，那么在clr编译il时，就会直接将相加拼接后的新字符串作为变量的值。
+            //如果代码里是将两个字符串变量相加的话，那么clr会在编译il时调用string.Concat(string,string)方法来拼接两个字符串变量的值，最终返回一个新的字符串变量。
+
+            //string aa = "1";
+            //string ab = aa;
+            //ab = "2";
+            //Console.WriteLine(ab);
+
+
+            string str = "123";
+            string ss = "123";
+            string str1 = "45";
+            string str2 = str + str1;
+            string str4 = "123" + "45";
+            string str3 = "12345";
+            ////Equals 比较值
+            ////ReferenceEquals 比较对象实例
+            //Console.WriteLine(str == ss);
+            //Console.WriteLine(str=="123");
+            //Console.WriteLine( ReferenceEquals(ss,str));
+            //Console.WriteLine(str2 == str3);//true
+            //Console.WriteLine(ReferenceEquals(str2, str3));//false
+            //Console.WriteLine(ReferenceEquals(str4, str3));//true
+
+
+try {}里有一个return语句，那么紧跟在这个try后的finally {}里的代码会不会被执行，什么时候被执行? 
+会执行，在return后执行。
+
+
+Console.WriteLine(aa());  //执行结果 finally 11 -- finally在return前执行
+
+public static int aa()
+{
+            try
+            {
+                return 11;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("catch");
+            }
+            finally
+            {
+                Console.WriteLine("finally");
+            }
+            return 10;
+}
+
+
+
+
+int i = 10;
+Console.WriteLine(i++);
+Console.WriteLine(++i);
+Console.WriteLine(i=20);
+Console.WriteLine(i==20);
+答案：
+10
+12
+20
+True        
+解答：i++表达式的值为i自增之前的值，所以打印10，执行完成后i变成11，执行++i的时候表达式的值为自增以后的值12。
+C#中赋值表达式的值为变量被赋值的值，因此最后一个就输出i赋值后的值20
+
+
+
+
+C#里的枚举都是常量
+不能定义方法、属性、事件
+多个枚举项有相同数值时，数值转项时会返回其中最后一个枚举项（枚举项有相同值时，通过数值转成枚举类型，输出最后一个。）
+枚举项的数值类型：int、uint、byte、sbyte、long、ulong、short、ushort
+BuyType t=(BuyType)Enum.Parse(typeof(BuyType),"Dis2");
+BuyType t=(BuyType)Enum.Parse(typeof(BuyType),"1");
+Enum.IsDefined(typeof(BuyType),2);//判断某个枚举项是否在这个枚举项里存在
+Enum.IsDefined(typeof(BuyType),"Dis2");
+
+public enum BuyType
+{
+  Normal=1,Dis0=2,Dis1,Dis2=3,Dis3
+}
+Dis1=3
+Dis3=4
+1-1
+2-2
+4-3
+3-3
+//如果为第一个枚举项赋了一个int值，那么后面的枚举项依次递增
+//可以用static 修饰枚举变量
+//一个枚举里的项都是同一类型
+
+//可以将枚举强转成它所代表的int值
+Convert.ToInt32(BuyType.Dis0)
+
+
+switch 里可以放 char string int 枚举类型（枚举里有一个整型值）
+
+
+---------------using s
+using重命名命名空间名称。简化命名空间。
+
+using 语句定义一个范围，在此范围的末尾将处理对象。
+using (expression | type identifier = initializer) statement
+实例化的对象必须实现 System.IDisposable 接口。
+
+在 using 语句中创建一个实例，确保退出 using 语句时在对象上调用 Dispose。当到达 using 语句的末尾，或者如果在语句结束之前引发异常并且控制离开语句块，都可以退出 using 语句。
+
+
+---------------using e
+
+
+------------------------const readonly S-----------------------
+
+const 的概念就是一个包含不能修改的值的变量。
+常数表达式是在编译时可被完全计算的表达式。因此不能从一个变量中提取的值来初始化常量。
+如果 const int a = b+1;b是一个变量，显然不能再编译时就计算出结果，所以常量是不可以用变量来初始化的。
+
+readonly 允许把一个字段设置成常量，但可以执行一些运算，可以确定它的初始值。
+因为 readonly 是在计算时执行的，当然它可以用某些变量初始化。
+readonly 是实例成员，所以不同的实例可以有不同的常量值，这使readonly更灵活。
+
+readonly 关键字与 const 关键字不同。
+
+1. const 字段只能在该字段的声明中初始化。
+   readonly 字段可以在声明或构造函数中初始化。因此，根据所使用的构造函数，readonly 字段可能具有不同的值。
+2. const 字段是编译时常数，而 readonly 字段可用于运行时常数。
+3. const 默认就是静态的，而 readonly 如果设置成静态的就必须显示声明。
+4．const 对于引用类型的常数，可能的值只能是 string 和 null。
+   readonly可以是任何类型
+
+
+readonly 关键字与 const 关键字不同。const 字段只能在该字段的声明中初始化。
+readonly 可以在字段中声明或构造函数中初始化。因此，根据所使用的构造函数，readonly 字段可能具有不同的值。
+另外，const 字段为编译时常数，而 readonly 字段可用于运行时常数，
+
+readonly修饰的字段是只能赋值一次, 以后不能修改了.
+public const int value1=1;//声明的同时必须初始化  
+public readonly int value2;//声明时不用非得初始化，以构造函数中的值为准，没有构造函数则是字段值。  
+public example()//构造函数  
+{  
+   value2 = 2;//readonly变量赋值后，就不能改变了  
+}
+
+暂时简单的总结了几点：
+1.const在编译时是可被完全计算的，所以不会出现const int a = b+1;这样的声明，而readonly是在计算时执行的（用到时才确定值），可以添加一个运算来确定他的初始值。
+如msdn中的列子：public static readonly uint timeStamp = (uint)DateTime.Now.Ticks;
+2.const默认是静态的，而readonly不是。
+
+const只能在初期就使用常量初始化好。对于每一次编译后的结果，const的值是固定的，而readonly的值是可以在运行的时候才确定值的~~
+Const用来申明编程时申明常量，ReadOnly用来申明运行时常量。
+
+
+typeof(x)中的x，必须是具体的类名、类型名称等，不可以是变量名称。 
+2、GetType()方法继承自Object，所以C#中任何对象都具有GetType()方法，它的作用和typeof()相同，返回Type类型的当前对象的类型。 
+比如有这样一个变量i: Int32 i = new Int32(); i.GetType()返回值是Int32的类型，但是无法使用typeof(i)，因为i是一个变量，
+如果要使用typeof()，则只能：typeof(Int32)，返回的同样是Int32的类型。
+
+
+
+------------------------const readonly E-----------------------
+
+
+dynamic
+动态类型
+调用时不做“编译”检查，而在程序运行时查找,如果成员存在且参数正确运行。
+
+动态类型总结
+可用于类型的字段、方法参数、方法返回值、泛型类型参数。
+可以赋值或被赋予任何类型，并且不需要类型转换。
+
+var关键字总结
+只能用于“局部变量”，不能用于字段、方法参数。
+变量类型在编译时就确定了。
+
+
+int count=0;
+string result=string.empty;
+foreach(char ch in str)
+{
+count+=System.Text.Encoding.Default.GetByteCount(ch.ToString());
+if count>bytecount
+break;
+result += ch.tostring();
+}
+
+foreach(char ch in str)
+{
+byte[] bytes=Encoding.UTF8.GetBytes(ch.tostring());
+count += bytes.length;
+if count> bytecount break;
+result +=ch.tostring();
+}
+
+return result;
+
+
+
+override
+多态就是设计模式！！！多态理解了设计模式就理解了。
+定义坐标类，坐标类默认继承Object的ToString()方法，没有自己的特色。
+override ToString()输出友好信息
+ public override string ToString()
+        {
+            return string.Format("({0},{1})",X,Y);
+        }
+只要用定义了这个方法的变量调用它就可以，不用关心具体的实现类是什么。
+
+重载是面向过程的概念
+
+virtual abstract
+virtual子类可以override也可以不override。但是如果子类不是抽象类，那么父类定义的所有abstract成员子类都必须实现。
+父类定义virtual方法的时候必须提供实现。父类定义abstract方法不提供实现。
+一个类如果有至少一个抽象成员，那么类必须是abstract的。
+
+基于接口编程
+变量（参数、返回值等）的类型能用父类就不要用子类，能用接口就不要用类，返回值、属性、参数等等，类型越靠近Object越好，尽量不要用具体的类型。只要返回的类型符合签名的要求，就能够随意控制返回的对象。如果将返回值设置为NotNullArrayList，有一点不想控制非空值了，就直接返回ArrayList就可以了。
+复习：
+接口中的方法不能声明public、private等，因为没有意义，private是类内部互相调，哪儿来的类内部？接口中能声明：方法，属性，索引器，不能声明字段。
+接口的多态。
+一个接口变量可以指向实现了这个接口的类的对象，不能指向没有实现这个接口的类的对象。
+
+开闭原则：对变化开放，对修改封闭。
+
+创建参数用IDataParameter parameter = cmd.CreateParameter()
+能用父类就不要用子类，能用接口就不要用类
+
+
+接口与抽象类
+公共的行为定义接口（接口定义能做什么），然后公共的实现定义成抽象类。抽象类是实现复用，接口定义的是公共行为的复用。
+抽象类可以给出方法的实现，也可以不给出（abstract）：接口所定义的方法一定不能给出实现代码。接口只是定义能做什么，没法定义怎么做。
+一个类只能有一个父类，一个类可以实现多个接口。
+同样是override的方法，virtual和abstract的区别是什么？ 
+父类的virtual有自己的实现，自己可以不override，也可以override，感觉父类的实现够用就不override，感觉不够用就override；abstract不能有自己的实现，(具体非abstract的)子类必须要实现。
+
+
+
+
+抽象的目的：制定规则，约束子类。
+
+抽象类：制定规则，约束子类，传递一些特性给子类。（抽象类定义的是公共的实现和能力）
+
+抽象类不能被密封
+抽象类必须为在该类的基类列表中列出接口的所有成员，提供它自己的实现，也可以为虚。
+但允许抽象类将接口方法映射到抽象方法上。
+
+如果抽象类实现接口：
+则可以把接口中方法映射到抽象类中作为抽象方法，让子类去实现。
+也可以在抽象类中直接实现该方法。
+
+
+
+抽象特点：
+1、需要用abstract关键字标记。
+2、抽象类不能实例化。抽象类的作用：为了让子类继承。
+3、抽象类中可以包括抽象成员，可以包括有具体代码的成员。
+4、抽象方法不能用static修饰。
+5、抽象成员必须包含在抽象类中。
+6、抽象方法不能有任何方法实现/方法体。
+7、由于抽象成员没有任何实现，所以子类必须将抽象成员重写（除非子类也是抽象类）。
+一个类只能继承一个抽象类（类的单根继承性）
+抽象方法是隐式的虚方法；只允许在抽象类中使用抽象方法声明。 
+
+
+
+静态方法不能标记override、virtual、abstract
+类不能new的情况
+static，构造函数私有化，抽象类
+
+
+为什么抽象方法不能用static修饰？
+static abstract 不存在
+static 没有override
+如果用static修饰，只能被静态类继承,静态类里面没有override。
+假设有，静态成员也不能new成实例对象，所以抽象方法不能用static修饰。
+ 
+
+默认访问修饰符protected。
+类、方法 默认访问修饰符 private。
+接口 默认public，可加可不加。
+接口里的成员默认public，不能添加。
+
+
+
+虚方法，抽象方法
+父类中如果有方法需要让子类重写，则可以将该方法标记为virtual
+虚方法在父类中必须有实现，哪怕是空实现。
+虚方法子类可以重写，也可以不重写。
+
+
+
+抽象类实现了oop中的一个原则，把可变与不可变分离。
+抽象类和接口就是定义不可变的，把可变的让子类去实现。
+
+
+接口本质：特殊的抽象类。
+接口作用：定义规则。降低耦合。
+IFlyable fly=new Fly();
+面向接口编程：不关心接口的具体实现，直接通过调用接口方法来完成编码。
+
+没有一定关系，侧重单一的某种能力。多继承。没有具体的实现，只有方法声明。
+可以有 方法、属性、索引器、事件。不能有字段、常量、域、构造函数、析构函数、静态成员。
+继承类必须实现所有成员。
+
+
+接口不具备继承的任何特点，它仅仅承诺了能够调用的方法。
+接口支持回调，继承不具备这个特点。
+
+接口里没有构造函数
+抽象类里有构造函数，虽然不能实例化。
+
+接口可以减少类型暴露的属性和方法，从而便于保护类型对象。当一个实现接口的类型可能包含其他方法或属性，
+但是方法返回的时候可以返回接口对象，这样调用端只能通过接口提供的方法或者属性访问对象的相关元素，这样
+可以有效保护对象的其他元素。
+
+减少值类型的拆箱操作。对于struct定义的值类型数据，当存放集合当中，每当取出来都需要进行拆箱操作，这时
+采用struct+Interface结合的方法，从而降低拆箱操作。
+http://blog.csdn.net/Knight94/archive/2006/10/08/1326326.aspx
+
+接口定义的方法和属性只能相对于继承它的类型（除非在继承类中修改接口定义的函数标示），那么对于多层继承
+关系的时候，光用接口就很难实现。因为如果让每个类型都去继承接口而进行实现的话，编码比较繁琐，有时候执
+行的结果还是错误，尤其当子类型对象隐式转换成基类对象进行访问的时候。这时需要用接口结合虚方法来实现。
+http://blog.csdn.net/Knight94/archive/2006/10/10/1329214.aspx
+
+接口是固定的，约定俗成的，因此在继承类中必须提供接口相应的方法和属性实现。而对于抽象类来说，抽象类的
+定义方法的实现贯穿整个继承树，因此其中方法的实现或者重写都是不确定的。因此相对而言，抽象类比较灵活。
+
+
+		接口				抽象类
+多继承		支持				不支持
+类型限制	没有				有，只能是引用类型
+方法实现	继承类型中必须给出方法实现	继承类中可以不给出
+扩展性		比较麻烦			相对比较灵活
+多层继承	比较麻烦，需要借助虚函数	比较灵活
+回调		支持				不支持
+构造函数	没有				有，虽然不能实例化
+
+
+
+
+
+类型指针：动态
+
+当存在继承关系时，声明的是父类则堆中对象保存的类型指针为父类，那么调用的时候就会执行父类的成员。
+如果调用的成员，父类中没有，子类中有，则报错。
+
+当创建一个子类对象时，声明的是父类，则调用父类
+声明子类，先找子类是否有，没有则调用父类。
+
+
+string.Empty  static readonly 空字符串 特定的静态运行时空字符串 不会被回收
+
+ArrayList
+
+object里的Equals比较的是地址
+默认ArrayList删除元素时，使用的是Object的Equals方法，比较的是两个元素的地址。
+而重写Equals后，比较的是重写后的方法。
+capacity 容量 
+一旦扩容不会改变
+
+ArrayList真正储存数据的是Object[]数组
+
+ArrayList al=new ArrayList();
+al.add(1);//第一次添加数据时，object数组被初始化成4个长度的数组对象。
+al.add(1);
+al.add(1);
+al.add(1);
+al.add(1);//容量已满，进行扩容，数组长度*2。
+al.add(1);
+
+
+
+
+
+HashTable
+bucket[] 数组存储数据
+IDictionaryEnumerator  
+DictionaryEntry  --  value
+
+
+[SturctLayout(LayoutKind.Sequential)]
+private struct bucket
+{
+  public object key; -- 键
+  public object value; -- 值
+  public int hash_coll; -- 对象的hash码
+}
+
+Hash算法：能够快速定位对象。
+Hash码是通过当前对象hash算法得出来。
+
+Hashtable储存元素时，是根据key的hash值%数组长度求来的一个下标
+
+1、hashtable里的键是不可重复的，当我们向hashtable中add元素时，
+元素储存在hashtable数组里的下标是根据key的hash值算出来的
+（但因为hash值取模数组长度，所以肯定不会超过当前数组长度。）
+2、注意：每个对象算出的HashCode并不是唯一的，有可能出现多个对象的HashCode相同。
+解决机制：2.1再次hash一次。2.2桶装模式，将两个相同hashcode的对象装入同一个位置。
+3、当新增时，HashTable里的容器数组已经满了，则以数组的两倍长度扩容。
+4、当我们从HashTable里取元素时（根据key来取），会根据key的hash值算出要取的元素的下标，
+并且比较元素里的key和当前要找的key参数的hash值是否相等，同时还要比较两个key的引用是否一致。如果都满足，则确定找到要取的元素。
+
+
+
+
+ArrayList：由于内部是一个object数组，添加数据不限制类型，因为内部有了数据自动扩容的方法，所以也不必担心数据量过大，溢出等原因。相比数组还是很有优势的，但是相比泛型集合，效率要比泛型集合慢很多，所以推荐使用泛型集合。
+List<T>：List<T>是ArrayList的泛型版本，与ArrayList相比，最大的优点在于，因为本质是个泛型数组，List在使用时必须声明泛型的类型，所以在集合时会做严格的编译检查，集合只能储存T类型或其子类型的对象。
+HashSet<T>:自动消除重复的数据。
+LinkedList<T>：链表集合Linkedlist最大的特点是，集合本身只保存了头节点，如果添加第二个节点，那么其实是把节点的地址保存在了
+头节点的next变量中，因此，链表集合内部不是依靠数组存放数据，所以每次添加的时候，不需要扩容。和其他集合相比，链表集合具有联系性，因为保存了上一个节点和下一个节点的地址。
+Dictionary<K,V>:字典集合存储数据时，都是根据hashcode计算要存储的位置下标，可以直接去访问，而不需要逐个找。
+
+
+
+1. Hashtable 和 HashMap
+（1）区别，这两个类主要有以下几方面的不同：
+Hashtable和HashMap都实现了Map接口，但是Hashtable的实现是基于Dictionary抽象类。
+在HashMap中，null可以作为键，这样的键只有一个；可以有一个或多个键所对应的值为null。 
+当get()方法返回null值时，即可以表示 HashMap中没有该键，也可以表示该键所对应的值为null。
+因此，在HashMap中不能由get()方法来判断HashMap中是否存在某个键，而应该用containsKey()方法来判断。
+而在Hashtable中，无论是key还是value都不能为null 。
+ 
+这两个类最大的不同在于：
+（1）Hashtable是线程安全的，它的方法是同步了的，可以直接用在多线程环境中。
+（2）而HashMap则不是线程安全的。在多线程环境中，需要手动实现同步机制。
+
+
+
+
+
+foreach只能读取数据，不能修改。
+实现了IEnumerable接口的成员才能用foreach遍历
+
+            //foreach只管GetEnumerator方法
+            //GetEnumerator如果是实现的接口，就必须返回一个IEnumerator的引用。
+
+            //foreach内部所做的事情
+            //IEnumerable eable=pc as IEnumerable;  //获得可迭代接口
+            //IEnumerator etor=eable.GetEnumerator();//获得迭代器（封装了集合的数据）
+            //while(etor.MoveNext())                //循环判断迭代器里的数据是否到了最后一位
+            //{
+            //  Person p=etor.Current;              //获得数据，并执行循环体代码
+            //  ......
+            //}
+
+            //在使用自定义集合foreach循环时，不一定非得实现接口，只要包含接口里的方法就可以了。
+            //CLR在编译foreach代码时，直接调用被循环的集合对象的GetEnumerator方法
+            //以获得迭代器对象，直接调用对象的MoveNext方法检查是否存在元素，然后调用get_Current方法获得元素。
+
+
+
+
+yield 
+
+Dictionary
+Entry<Tkey,TValue> 
+
+
+Stopwatch w1=new Stopwatch();
+w1.Elapsed  -- 消耗时间
+
+ElapsedTicks的值取决于Frequency，而Frequency表示一个频率，这个和机器的硬件和操作系统有关，
+所以对ElapsedTicks不需要去知道它的单位，只要知道它表示了一种时间刻度就行了
+Stopwatch 是从不同的计时周期 DateTime.Ticks。 
+中的每个计时周期 DateTime.Ticks 值表示一个 100 纳秒时间间隔。 
+中的每个计时周期 ElapsedTicks 值表示的时间间隔等于 1 秒除以 Frequency。
+
+
+
+
+try catch 
+DivideByZeroException 除零catch
+
+
+1字节（能存放8个0或者1）=8bit（位）
+
+ASCII
+UTF-8
+UNICODE
+GB2312
+BIG-5
+
+
+
+
+C#闭包：是由编译器生成的数据结构（一个C#类）。其中包含一个表达式以及对表达式进行求值所需的变量（C#的公共字段）。变量允许在不改变表达式签名的前提下将数据从表达式的一次调用传递到下一次调用。
+
+
+
+序列化：将对象或对象图转换成字节流的过程。
+（将对象里的字段及值以“文本”的方式保存成文件。）
+反序列化：将字节流转换回对象图的过程。
+（先创建一个相同的对象，然后将“文本”里保存的字段的值设置到对应的字段值中。）
+
+序列化：[Serializable] 要序列化的对象，加入可序列化特性
+  二进制格式化器，将对象转成文本（字段和字段值，类名）。
+反序列化：
+  二进制格式化器，按照文本（字段和字段值，类名）信息里的类名，
+使用反射技术创建新对象，并将对应的字段值设置到新对象的字段中。
+
+
+----------文件流
+
+拷贝文件的两种方式：将源文件内容全部读到内存中，再写到目标文件中；读取源文件的1KB内存，写到目标文件中，再读取源文件的1KB内存，再写到目标文件中……。第二种方式就是一种流的操作。
+用File.ReadAllText、File.WriteAllText进行文件读写是一次性读、写，如果文件非常大会占内存、慢。需要读一行处理一行的机制，这就是流(Stream)。Stream会只读取要求的位置、长度的内容。
+Stream不会将所有内容一次性读取到内存中，有一个指针，指针指到哪个字节就从哪个字节开始读、写。
+流有很多种类，文件流是其中一种。FileStream类new FileStream(“c:/a.txt”, filemode, fileaccess)后两个参数可选值及含义自己看。 FileStream可读可写。可以使用File.OpenRead、File.OpenWrite这两个简化调用方法。
+byte[]是任何数据的最根本表示形式，任何数据最终都是二进制。
+FileStream的Position属性为当前文件指针位置，每写一次就要移动一下Position以备下次写到后面的位置。Write用于向当前位置写入若干字节，Read用户读取若干字节。(*)
+使用using可以方便的释放资源(自动调用Dispose方法)
+只有实现了IDispose接口的类才能使用using释放资源
+
+使用FileStream写入文本文件。
+演示通过FileStream写入读取文本文件。对于中文如果每次读取1个byte会有什么效果？更好的选择→StreamReader
+使用FileStream读取文本文件。
+使用FileStream进行大文件拷贝。
+演示File.ReadAllBytes()与File.WriteAllBytes()进行文件拷贝。（查看内存使用情况）
+
+使用using来简化操作。
+ //总结：不是任何类型的对象都可以写在using()的小括号里面的
+ //只有实现了IDisposable接口的类型的对象，才能写在using的小括号里面
+ //当using{}执行完毕时，会自动调用对象的Dispose()方法来释放资源。
+
+
+
+StreamReader、StreamWriter 主要用来操作字符串文本
+FileStream 文件流，可以操作任意类型的文件数据
+
+ReadToEnd用于从当前位置一直读到最后，内容大的话会占内存；每次调用都往下走，不能无意中调用了两次
+ReadLine读取一行，如果到了末尾，则返回null。
+
+---StreamReader
+和StreamWriter类似， StreamReader简化了文本类型的流的读取。
+
+Stream stream=File.OpenRead("c:/1.txt");
+using(StreamReader reader=new StreamReader(stream,encoding))
+{
+   Console.WriteLine(reader.ReadLine());
+}
+
+Stream把所有内容当成二进制来看待，如果是文本内容，则需要程序员来处理文本和二进制之间的转换。
+用StreamWriter可以简化文本类型的Stream的处理
+
+---StreamWriter是辅助Stream进行处理的
+using (StreamWriter writer = new StreamWriter(stream, encoding))
+{
+     writer.WriteLine("你好");
+}
+StreamWriter对Stream进行了包装，调一下writer.WriteLine背后帮我们做了把字符串转换为二进制的工作。
+
+
+
+
+
+WebClient的流操作
+WebClient OpenRead方法打开一个读取流（ReadLine好像有Bug）；OpenWrite方法打开一个写入流。
+案例：使用WebClient分析读取http服务器上的Excel文件，不用中间文件。
+基于流方式进行操作的好处就是不用中间文件，没有安全性问题、没有文件冲突问题。
+开发复杂一点程序的原则就是步步为营，不要想着一次写出来，比如这个案例就可以分解为：读取数据库、创建Excel、上传Excel三步，所以先读取数据库，然后WriteLine看看数据有没有被正确的读出来，ok再开发生成Excel的功能，先生成到FileStream中，成功了再最后完成上传到FTP的功能。这也是迭代的开发方式
+File.ReadAllLines(),Stream、FileStream、StreamWriter之间的关系，如何分析Xls等二进制数据
+
+
+
+对象序列化是将对象（比如Person对象）转换为二进制数据，反序列化是将二进制数据还原为对象。对象是稍纵即逝的，不仅程序重启、操作系统重启会造成对象的消失，就是退出函数范围等都可能造成对象的消失，序列化/反序列化就是为了保持对象的持久化。就像用DV录像（序列化）和用播放器播放（反序列化）一样。
+BinaryFormatter类有两个方法：
+void Serialize(Stream stream, object graph)对象graph序列化到stream中
+object Deserialize(Stream stream)将对象从stream中反序列化，返回值为反序列化得到的对象
+练习：将几个int、字符串添加到ArrayList中，然后序列化到文件中，再反序列化回来。
+不是所有对象都能序列化，只有可序列化的对象才能序列化，在类声明上添加[Serializable]，对象的属性、字段的类型也必须可序列化。
+反序列的项目中必须有同样的类，否则不能反序列化。
+
+
+关于二进制序列化需要注意的事项：
+1.要序列化的类型必须标记为：[Serializable]
+2.该类型的父类也必须标记为： [Serializable]
+3.该类型中的所有成员的类型也必须标记为： [Serializable]
+4.序列化只会对类中的字段序列化。(只能序列化一些状态信息。)
+
+创建一个二进制序列化器：
+BinaryFormatter bf=…..;
+1.5:创建一个文件流。
+2.bf.Serialize(stream,对象);
+
+创建一个二进制序列化器：
+BinaryFormatter bf;
+2.创建文件流：
+3.执行反序列化：
+object obj=bf.Deserialize(stream);
+
+
+
+浅表拷贝：得到一个与原始对象类型、值相同的新实例。如果字段是引用类型，该引用被拷贝，而不是拷贝引用的对象。
+深层拷贝：包含对象直接或间接引用的对象的所有拷贝。
+
+浅拷贝
+实现ICloneable接口
+public Object Clone()
+{
+ return (Object)this.MemberwiseClone();
+}
+
+object DeepCopy(object src)
+{
+ BinaryFormatter Formatter=new BinaryFormatter(null,new StreamingContext(StreamingContextStates.Clone));
+ using(MemoryStream stream=new MemoryStream())
+ {
+ Formatter.Serialize(stream,src);
+ stream.Position=0;
+ return Formatter.Deserialize(stream);
+ }
+}
+
+
+
+克隆的类型
+我们基于克隆的程度将克隆分成两大类：“深层”克隆和“浅表”克隆。“浅表”克隆得到一个新的实例，一个与原始对象类型相同、包含值类型字段的拷贝。但是,如果字段是引用类型的, 该引用将被拷贝, 而不是拷贝引用的对象。 因此,原始对象的引用和克隆对象的引用都指向同一个对象。另一方面, 对象的“深层”克隆包含原始对象直接或间接引用的对象的所有拷贝。下面举例说明。
+
+对象X引用对象A，对象A引用对象M。对象X的“浅表”克隆对象Y，同样也引用了对象A。相对比的是，对象X的“深层”克隆对象Y，却直接引用了对象B，并且间接引用对象N，这里，对象B是对象A的拷贝，对象N是对象M的拷贝。
+
+X引用A引用M
+浅表Y 引用A
+深层Y 直接引用B（对象A的拷贝）间接引用N（对象N的拷贝）
+
+X - A - M 
+浅表Y - A
+深层Y - B(A的拷贝) - N(N的拷贝)
+
+
+基础的 Web Services 平台是 XML + HTTP。
+HTTP 协议是最常用的因特网协议。
+XML 提供了一种可用于不同的平台和编程语言之间的语言。
+
+http://www.webxml.com.cn/
+http://www.cnblogs.com/Capricornus/archive/2010/08/17/1801596.html
+WSDL：描述了WebService提供了哪些方法。
+SOAP：描述了向服务器发送什么格式的调用数据，以及服务器会返回什么格式的数据。
+WSDL：对WebService能够提供的服务进行描述的协议。服务器只有返回这个格式的数据，代码生成器才能根据WSDL生成代码。
+
+是系统对外的接口
+可以接受从其他系统中传递过来的请求
+
+Web Service 的工作原理
+Web Service也叫XML Web Service WebService是一种可以接收从Internet或者Intranet上的其它系统中传递过来的请求，轻量级的独立的通讯技术。是:通过SOAP在Web上提供的软件服务，使用WSDL文件进行说明，并通过UDDI进行注册。
+
+XML：(Extensible Markup Language)扩展型可标记语言。面向短期的临时数据处理、面向万维网络，是Soap的基础。
+
+Soap：(Simple Object Access Protocol)简单对象存取协议。是XML Web Service 的通信协议。当用户通过UDDI找到你的WSDL描述文档后，他通过可以SOAP调用你建立的Web服务中的一个或多个操作。SOAP是XML文档形式的调用方法的规范，它可以支持不同的底层接口，像HTTP(S)或者SMTP。
+
+WSDL：(Web Services Description Language) WSDL 文件是一个 XML 文档，用于说明一组 SOAP 消息以及如何交换这些消息。大多数情况下由软件自动生成和使用。
+
+UDDI (Universal Description, Discovery, and Integration) 是一个主要针对Web服务供应商和使用者的新项目。在用户能够调用Web服务之前，必须确定这个服务内包含哪些商务方法，找到被调用的接口定义，还要在服务端来编制软件，UDDI是一种根据描述文档来引导系统查找相应服务的机制。UDDI利用SOAP消息机制（标准的XML/HTTP）来发布，编辑，浏览以及查找注册信息。它采用XML格式来封装各种不同类型的数据，并且发送到注册中心或者由注册中心来返回需要的数据。
+
+soap 格式规范
+wsdl 描述文档
+uddid 一种目录服务。通过soap消息机制发布、编辑、浏览以及查找注册信息。
+
+SOAP (简易对象访问协议)
+UDDI (通用描述、发现及整合)
+WSDL (Web services 描述语言)
+
+WSDL
+WSDL 是基于 XML 的用来描述 Web services 以及如何访问它们的一种语言。
+WSDL 可描述 web service，连同用于 web service 的消息格式和协议的细节。
+
+SOAP
+SOAP 是一种使应用程序有能力通过 HTTP 交换信息的基于 XML 的简易协议。
+或者可以更简单地说：SOAP 是一种用于访问 web service 的协议。
+
+
+
+什么是 SOAP？
+基本的 Web services 平台是 XML + HTTP。
+SOAP 指简易对象访问协议
+SOAP 是一种通信协议
+SOAP 用于应用程序之间的通信
+SOAP 是一种用于发送消息的格式
+SOAP 被设计用来通过因特网进行通信
+SOAP 独立于平台
+SOAP 独立于语言
+SOAP 基于 XML
+SOAP 很简单并可扩展
+SOAP 允许您绕过防火墙
+SOAP 将作为 W3C 标准来发展
+如需更多有关 SOAP 的知识，请访问我们的《SOAP 教程》
+什么是 WSDL?
+WSDL 是基于 XML 的用于描述 Web Services 以及如何访问 Web Services 的语言。
+WSDL 指网络服务描述语言
+WSDL 使用 XML 编写
+WSDL 是一种 XML 文档
+WSDL 用于描述网络服务
+WSDL 也可用于定位网络服务
+WSDL 还不是 W3C 标准
+如需更多有关 WSDL 的知识，请访问我们的《WSDL 教程》
+什么是UDDI？
+UDDI 是一种目录服务，通过它，企业可注册并搜索 Web services。
+UDDI 指通用的描述、发现以及整合（Universal Description, Discovery and Integration）。
+UDDI 是一种用于存储有关 web services 的信息的目录。
+UDDI 是一种由 WSDL 描述的网络服务接口目录。
+UDDI 经由 SOAP 进行通迅。
+UDDI 被构建于 Microsoft .NET 平台之中。
+
+
+
+
+
+
+正则表达式
+.：匹配任何单个字符。
+例如：“b.g”匹配：“big”“bug”“b g”,不匹配：“buug”“b..g”
+[]：匹配括号中的任何一个字符。
+例如：“b[aui]g”匹配：“bug”“big”“bag”,不匹配：“beg”“baug”。
+可以在括号中使用连字符“-”来指定字符的区间来简化表示，例如正则表达式[0-9]可以匹配任何数字字符，这样正则表达式“a[0-9]c”等价于“a[0123456789]c”就可以匹配“a0c”“a1c”“a2c”等。
+还可以制定多个区间，例如“[A-Za-Z]”可以匹配任何大小写字母，“[A-Za-z0-9]”可以匹配任何的大小写字母或者数字。
+()：将()；之间括起来的表达式定义为“组”(group),并且将匹配这个表达式的字符保存到一个临时区域，这个元字符在字符串提取的时候非常有用。把一些字符表示为一个整体。改变优先级、定义提取组两个作用。
+| ：将两个匹配条件进行逻辑“或”运算。'z|food' 能匹配 "z" 或 "food"。'(z|f)ood' 则匹配 "zood" 或 "food"。 
+*：匹配0至多个在它之前的子表达式，和通配符*没关系。例如正则表达式“zo*”能匹配 “z” 、“zo”以及 “zoo”；因此“.*”意味着能够匹配任意字符串。"z(b|c)*"→zb、zbc、zcb、zccc、zbbbccc。"z(ab)*"能匹配z、zab、zabab（用括号改变优先级）。
++ ：匹配前面的子表达式一次或多次，和*对比（0到多次）。例如正则表达式9+匹配9、99、999等。 “zo+”能匹配 “zo”以及 “zoo” ，不能匹配"z"。
+? ：匹配前面的子表达式零次或一次。例如，"do(es)?" 可以匹配 "do" 或 "does" 。一般用来匹配“可选部分”。
+{n} ：匹配确定的 n 次。"zo{2}"→zoo。例如，“e{2}” 不能匹配“bed”中的“e”，但是能匹配“seed”中的两个“e”。 
+{n,} :至少匹配n次。例如，“e{2,}”不能匹配“bed”中的“e”，但能匹配 “seeeeeeeed”中的所有“e”。 
+{n,m} ：最少匹配 n 次且最多匹配 m 次。“e{1,3}”将匹配“seeeeeeeed”中的前三个“e”。 
+^（shift+6） ：匹配一行的开始。例如正则表达式“^regex”能够匹配字符串“regex我会用”的开始，但是不能匹配“我会用regex”。
+^另外一种意思：非！（暂时不用理解）
+$ ：匹配行结束符。例如正则表达式“浮云$” 能够匹配字符串“一切都是浮云”的末尾，但是不能匹配字符串“浮云呀”  
+
+正则表达式是与语言无关真的就是想表达\d。
+注意这些简写表达式是不考虑转义符的，这里的\就表示字符\，而不是C#字符串级别的\，在C#代码中需要使用@或者\双重转义。区分C#级别的转移和正则表达式级别的转移，恰好C#的转义符和正则表达式的转义符都是\而已。正则表达式的转移是在C#之后的（层层盘剥）。把C#的转义符想成%就明白了。在C#看来@"\-"就是\-这个普通的字符串，只不过在正则表达式分析引擎看来他有了特殊含义。"\\d"或者@"\d"
+\d：代表一个数字，等同于[0-9]
+\D：代表非数字，等同于[^0-9]
+\s：代表换行符、Tab制表符等空白字符
+\S：代表非空白字符
+\w：匹配字母或数字或下划线或汉字，即能组成单词的字符
+\W：非\w ，等同于[^\w] 
+d：digital；s：space、w：word。大写就是“非”
+
+
+1、判断是否是合法的邮政编码（6位数字）
+Regex.IsMatch("100830","^[0-9]{6}$")
+Regex.IsMatch("119", @"^\d{6}$"); 
+解释：由元字符定义得知"[0-9]"表示0到9的任意字符，"{6}"表示前面的字符匹配6此，因此“[0-9]{6}”中的{6}表示对数字匹配6次。简写表达式得知“[0-9]”可以被“\d”代替，所以第二种写法“\d{6}”也是正确的。不要忘了@或者\\d。
+
+2、判断一个字符串是不是身份证号码，即是否是15或18位数字。
+错误写法：Regex.IsMatch("123456789123456789", @"^\d{15}|\d{18}$")，表示15位数字开头或者18位数字结尾。
+正确写法：Console.WriteLine(Regex.IsMatch("0111111111111111", @"^\d{15}$|^\d{18}$"))或者@"^(\d{15}|\d{18})$"
+
+3、判断字符串是否为正确的国内电话号码，不考虑分机。比如“010-95555”、“01095555”、“95555”都是正确的号码。区号为3位或者4位。
+ Regex.IsMatch("123456-95555", @"^\d{3,4}\-?\d+$")
+"^\d{3,4}\-?\d+$"表示被匹配的字符序列应该是由三至四位数字组成，由于长途区号的连字符“-”可有可无，所以这里使用“?”元字符进行说明。由于连字符“-”在正则表达式中有特殊含义(表示范围，比如[0-9])，所以要对其进行转义。
+
+4、判断一个字符串是否是合法的Email地址。一个Email地址的特征就是以一个字符序列开始，后边跟着“@”符号，后边又是一个字符序列，后边跟着符号“.”，最后是字符序列
+Regex.IsMatch("email12@mail.com", @"^\w+@\w+\.\w+$");
+[]括号中的任意字符，\w字母、数字、下划线，+一到多个。由于.在正则表达式中有特殊的含义，因此对于真正想表达“.”则需要转移“\.”。先想正则表达式是语言无关的。这是因为C#中、正则表达式中\都代表转义符，就有点乱了。考虑的时候先不考虑C#语言，分成两步先考虑正则表达式语法，再考虑找个正则表达式在C#中如何表示。
+
+字符串提取
+正则表达式还可以用来进行字符串提取
+Match match = Regex.Match("age=30", @"^(. +)=(.+)$");
+if (match.Success)
+{
+    Console.WriteLine(match.Groups[1] .Value);
+    Console.WriteLine(match.Groups[2] .Value);
+} 
+match的Success属性表示是否匹配成功；正则表达式中用()将要提取的内容括起来，然后就可以通过Match的Groups属性来得到所有的提取元素，注意Groups的序号是从1开始的，0有特殊含义
+
+贪婪模式与非贪婪模式
+
+从文本提取出名字：
+Match match = Regex.Match("大家好。我是ddd", "我是(.+)。");//没有加^$。
+看结果。+、*的匹配默认是贪婪(greedy)的：尽可能多的匹配，直到“再贪婪一点儿”其后的匹配模式就没法匹配为止。
+在+、*后添加?就变成非贪婪模式（? 的另外一个用途）：让其后的匹配模式尽早的匹配。修改成"我是(.+?)。"
+一般开发的时候不用刻意去修饰为非贪婪模式，只有遇到bug的时候发现是贪婪模式的问题再去解决。因为贪婪效率高。
+
+如果匹配中有group，还可以在替换字符串中用$number来进行引用替换。例子，将中文双引号替换为单引号，string s1 = "string s1 = “sasdfadsf”;string s2 = “哈哈哈哈”";s1 = Regex.Replace(s1, "“(.*?)”", "\"$1\"");//注意贪婪的问题
+为什么上面需要$1，因为用到被替换的值了，引用！
+string s = Regex.Replace("年龄=20", @"(.+)=(.+)", "$2是$1")
+
+
+
+
+委托
+
+委托：调用回调方法的一种类型安全的方式。（确保回调方法是类型安全的）
+允许顺序调用多个方法并支持调用静态方法和实例方法。
+
+就是一个方法的“集合”，一旦调用委托，就会依次执行“集合”里所有的方法。
+	特殊的是：要装入的方法的签名，必须和委托签名一致。
+
+委托的作用有两个
+第一个作用：
+  1、可以帮助将方法作为参数使用
+   1.1委托里可以包含签名与委托一致的方法。
+   1.2委托里包含的方法访问权限和委托本身的访问权限无关。
+   1.3凡是将方法直接赋给委托对象的地方，编译时，都会帮我们使用生成对应的new委托方法。（语法糖）
+  2、委托能帮我们封装一个函数指针，供程序员调用。
+   2.1委托本质上就是一个类，继承与 MultcastDelegate->Delegate(在Delegate类中有一个IntPtr类型的变量用来 )
+  3、匿名方法
+   3.1、并不是真的没有名字，它在CLR编译时会产生一个临时方法名。
+   3.2、匿名方法产生后，那个指针会存放在委托变量中供程序调用。
+第二个作用：一次执行N个方法（多播委托）
+  1、可以向委托上注册多个方法。
+  2、也可以从委托上移除已注册的方法。
+  3、如果委托上注册了多个有返回值的方法，那么调用后委托返回的是最后一个方法的返回值。
+
+delegate -> MultcastDelegate -> Delegate
+
+
+声明委托目的是为了包装N个相同签名的方法
+
+
+多播委托中追加新方法（委托对象）的步骤
+dgh1+=dgh2;
+1、声明一个object数组。（数组中存储的就是多播委托对象）
+2、判断两个要组合的委托类型是否一致。
+3、将要追加的委托对象里的object数组取出。(dgh2里的object数组取出)
+4、如果追加的不为空，则取出里面的元素个数。
+5、将dgh1里的object数组取出。
+   5.1、如果数组等于null，则将dgh2里的数组个数+1。（准备一个新的数组长度为dgh2里方法个数+1）
+   5.2、将dgh1直接放在数组第一个元素位置。
+   5.3、如果dgh2的方法数组为空，则直接将dgh2设置到新数组第二个元素。
+
+在运行+=注册方法时，其实创建了第三个委托，然后将两个委托里所有的方法都用委托对象包装后存入第三个委托中。
+
+
+
+delegate void MyTranslateDelegate(string strChar,int s)
+
+private void btn_click()
+{
+  //new一个委托对象，必须传入一个相同方法签名的方法
+  MyTranslateDelegate dg=new MyTranslateDelegate(TranslateToCN);
+  //可以不使用new关键字，直接将签名相同的方法赋值给委托对象
+  //MyTranslateDelegate dg=  TranslateToCN;
+  //调用委托，可以直接把委托对象作为方法使用
+  //dg("ss",123);
+  //调用委托，可以通过委托对象的Invoke方法来调用
+  //dg.Invoke("ss",123);
+  //将委托对象作为参数传递
+  //Translate(dg,"ss",123);
+
+  Translate(TranslateToCN,"ss",123);
+
+}
+
+void Translate(MyTranslateDelegate dg,string strChar,int a)
+{
+ dg(strChar,a);
+}
+
+void TranslateToCN(string strChar,int s)
+{
+ Console.WriteLine("");
+}
+
+
+
+使用委托保存方法指针，有可能出现如下错误，不小心把前面注册的方法清除的危险。
+事件只提供+=，-=操作，杜绝了程序员的误操作。
+
+事件其实就是为了约束一个委托对象的操作方法，对外只提供+=，-=操作。
+
+event关键字的好处
+1、创建了一个对应的私有委托对象。
+2、封装了对私有委托对象的外部操作。
+
+
+事件本质论
+event会自动生成一个private delegate变量和两个函数: add和remove，C#编译器用这两个方法支持+=和-=操作符 (*)。C#<>.Net。
+public event MyDelegate OnEvent;
+内部实现是（示例性）
+private MyDelegate OnEvent;
+public void Add(MyDelegate d)
+{
+   OnEvent+=d;
+}
+public void Remove(yDelegate d)
+{
+   OnEvent-=d;
+}
+因为OnEvent是private的，所以在类外部不能OnEvent(1)触发事件，但是在类内部可以。
+public的方法只有Add和Remove，所以只能+=、-=，其他的操作都是不可以的。
+
+委托和事件没有可比性，因为委托是类型，事件是对象，下面说的是委托的对象（用委托方式实现的事件）和（标准的event方式实现）事件的区别。事件的内部是用委托实现的。（举例子：三种实现事件方式的区别）。
+因为对于事件来讲，外部只能“注册自己+=、注销自己-=”，外界不可以注销其他的注册者，外界不可以主动触发事件，因此如果用Delegate就没法进行上面的控制，因此诞生了事件这种语法。add、remove。
+事件是用来阉割委托实例的。事件只能add、remove自己，不能赋值。事件只能+=、-=，不能=、不能外部触发事件。
+
+
+
+------------------------------线程 s------------------------------
+
+线程：虚拟的逻辑cpu
+
+程序中的一个执行流，每个线程都有自己的专有寄存器（栈指针、程序计数器等），但代码区是共享的，即不同的线程可以执行同样的函数。
+多线程是指程序中包含多个执行流，即在一个程序中可以同时运行多个不同的线程来执行不同的任务（代码），也就是说允许单个程序创建多个并行执行的线程来完成各自的任务。
+
+
+
+多线程目的：
+1、让cpu主动执行不同的程序单元，这样就不至于被某个程序的破坏性代码引起死机症状。
+2、理想上能在同一时间做多个事情。
+
+
+前台线程：只有所有的前台线程都关闭才能完成程序关闭。
+后台线程：只要所有的前台线程结束，后台线程自动结束。
+thread.IsBackground 设置后台线程
+
+
+回调函数：自己定义，系统调用。对于我们来说，就是委托。
+
+
+
+
+为什么要使用多线程
+让计算机同时做多件事情，节约时间。
+多线程可以让一个程序同时处理多个事情。
+后台运行程序，提高程序的运行效率，也不会使主界面出现无响应的情况。
+
+产生一个线程的4个步骤
+编写产生线程所要执行的方法
+引用System.Threading命名空间
+实例化Thread类，并传入一个指向线程所要运行方法的委托。（这时候这个线程已经产生，但是还没有运行）
+
+调用Thread实例的Start方法，标记该线程可以被CPU执行，但具体执行时间由CPU决定。
+
+一个进程至少有一个线程
+同一个进程中的多个线程之间可以“并发”执行
+
+
+
+Start() 启动线程
+Abort() 终止线程
+Thread.Sleep(100) 静态方法，可以使当前线程停止一段时间运行
+Name 线程名
+Thread.CurrentThread 获得当前的线程引用
+
+
+
+Thread.Start（）：启动线程的执行；
+Thread.Suspend（）：挂起线程，或者如果线程已挂起，则不起作用；
+Thread.Resume（）：继续已挂起的线程；
+Thread.Interrupt（）：中止处于 Wait或者Sleep或者Join 线程状态的线程；
+Thread.Join（）：阻塞调用线程，直到某个线程终止时为止
+Thread.Sleep（）：将当前线程阻塞指定的毫秒数；
+Thread.Abort（）：以开始终止此线程的过程。如果线程已经在终止，则不能通过Thread.Start（）来启动线程。
+　　通过调用Thread.Sleep，Thread.Suspend或者Thread.Join可以暂停/阻塞线程。调用Sleep()和Suspend()方法意味着线程将不再得到CPU时间。这两种暂停线程的方法是有区别的，Sleep()使得线程立即停止执行，但是在调用Suspend()方法之前，公共语言运行时必须到达一个安全点。一个线程不能对另外一个线程调用Sleep()方法，但是可以调用Suspend()方法使得另外一个线程暂停执行。对已经挂起的线程调用Thread.Resume（）方法会使其继续执行。不管使用多少次Suspend()方法来阻塞一个线程，只需一次调用Resume()方法就可以使得线程继续执行。已经终止的和还没有开始执行的线程都不能使用挂起。Thread.Sleep（int x）使线程阻塞x毫秒。只有当该线程是被其他的线程通过调用Thread.Interrupt（）或者Thread.Abort（）方法，才能被唤醒。
+　　如果对处于阻塞状态的线程调用Thread.Interrupt（）方法将使线程状态改变，但是会抛出ThreadInterupptedException异常，你可以捕获这个异常并且做出处理，也可以忽略这个异常而让运行时终止线程。在一定的等待时间之内，Thread.Interrupt（）和Thread.Abort（）都可以立即唤醒一个线程。
+　　下面我们将说明如何从一个线程中止另外一个线程。在这种情况下，我们可以通过使用Thread.Abort（）方法来永久销毁一个线程，而且将抛出ThreadAbortException异常。使终结的线程可以捕获到异常但是很难控制恢复，仅有的办法是调用Thread.ResetAbort（）来取消刚才的调用，而且只有当这个异常是由于被调用线程引起的异常。因此，A线程可以正确的使用Thread.Abort（）方法作用于B线程，但是B线程却不能调用Thread.ResetAbort（）来取消Thread.Abort（）操作。
+　　Thread.Abort（）方法使得系统悄悄的销毁了线程而且不通知用户。一旦实施Thread.Abort（）操作，该线程不能被重新启动。调用了这个方法并不是意味着线程立即销毁，因此为了确定线程是否被销毁，我们可以调用Thread.Join（）来确定其销毁，Thread.Join（）是一个阻塞调用，直到线程的确是终止了才返回。但是有可能一个线程调用Thread.Interrupt（）方法来中止另外一个线程，而这个线程正在等待Thread.Join（）调用的返回。
+　　尽可能的不要用Suspend()方法来挂起阻塞线程，因为这样很容易造成死锁。假设你挂起了一个线程，而这个线程的资源是其他线程所需要的，会发生什么后果。因此，我们尽可能的给重要性不同的线程以不同的优先级，用Thread.Priority（）方法来代替使用Thread.Suspend（）方法。
+
+
+线程调度和优先级
+非抢占式调度：
+指某个线程在运行时不会被操作系统强制暂停，它可以持续地运行直至运行告一段落并主动地交出运行权。
+在这样的调度模式下，线程的运行就完全是单队列的，并且可能产生恶意程序长期霸占运行权的情况。
+而且一旦一个程序死了，那么整个电脑就只好重启了。
+
+抢占式调度：
+指每个线程都只有极少的运行时间（在windows内核模式下这个时间不会超过20ms），而当时间用完时该线程就会被强制暂停，
+保存上下文并把CPU运行权利交给下一个线程，这样调度的结果就是所有的线程都在被快速地切换运行，使得使用者感觉所有
+的线程在“并行”运行。
+
+
+使用线程的理由：
+1、可以使用线程将代码同其他代码隔离
+这将提高应用程序的可靠性。事实上，这正是windows在操作系统中引入线程概念的原因。windows之所以需要线程来获得可靠性，是因为你的应用程序对于操作系统来说是第三方组件，而windows不会在你发布应用程序之前对这些代码的质量进行验证。
+2、可以使用线程来简化代码。
+3、可以用线程来实现并发执行。
+
+
+ExecutionContext管理线程执行上下文，如何从一个线程“流”向另一个
+可用这个类阻止一个执行上下文的流动，从而提升应用程序的性能。
+
+
+
+线程池如果管理线程
+
+
+
+
+
+
+
+------------------------------线程 e------------------------------
+
+
+------------------------------HTTP协议 s------------------------------
+
+基于应用层的通信规范（发送和接收的数据格式）
+
+Request Line
+HTTP
+Headers
+
+分析工具：
+	1、DebugBar，Http(s)标签的内容。免费。只能分析当前浏览器中的内容。
+	2、HttpWatch，收费，只能分析当前浏览器中的内容。推荐使用。(http://jingyan.baidu.com/article/5553fa820539ff65a339345d.html)
+	3、HttpAnalyzer，收费的，能分析计算机上所有的Http请求数据。
+	4、WFetch_1.4，免费，小型分析工具。
+
+
+1、连接(Connection)：浏览器和服务器之间传输数据的通道。 一般请求完毕就关闭，http不保持连接。不保持连接会降低处理速度（因为建立连接速度很慢），保持连接的话就会降低服务器的处理的客户端请求数，而不保持连接服务器可以处理更多的请求。连接(Connection)：浏览器和服务器之间传输数据的通道。 一般请求完毕就关闭，http不保持连接。不保持连接会降低处理速度（因为建立连接速度很慢），保持连接的话就会降低服务器的处理的客户端请求数，而不保持连接服务器可以处理更多的请求。
+2、请求(Request)：浏览器向服务器发送的“我要***”的消息，包含请求的类型、请求的数据、浏览器的信息（语言、浏览器版本等）。
+3、响应(Response)：服务器对浏览器请求的返回的数据，包含是否成功、状态码等。
+
+Http请求：
+	请求头：
+		请求行 
+		实体行(/状态行)
+		头部结束标志
+	请求体：
+		HTTP数据体
+
+
+
+
+
+请求报文示例
+
+------请求行------
+POST /FirstWeb/FistShower.ashx HTTP/1.1
+------状态行------	
+Host:localhost:2340
+Connection: keep-alive
+Cache-Control: max-age=0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Encoding: gzip, deflate, sdch, br
+Accept-Language: zh-CN,zh;q=0.8
+Referer:http://localhost:2340/Default.aspx
+Cookie:rtime=3:ltime=1300433935762
+Content-Type:application/x-www-form-urlencoded
+Content-Length:22
+------空行------
+
+------请求体------
+txtName=123&txtPwd=123
+
+
+---get
+GET /1.html HTTP/1.1
+Host: 127.0.0.1:50001
+Connection: keep-alive
+Cache-Control: max-age=0
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Encoding: gzip, deflate, sdch, br
+Accept-Language: zh-CN,zh;q=0.8
+
+
+
+请求报文
+
+用httpwatch查看访问一个网站的响应情况。敲入一个网址后，浏览器向服务器发出请求。页面中的图片、js、css在单独的请求中。
+
+GET /index.html HTTP/1.1表示向服务器用GET方式请求首页，使用HTTP/1.1协议
+Accept-Encoding gzip, deflate表示浏览器支持gzip、deflate两种压缩算法
+Accept-Language zh-cn 表示浏览器支持的语言，很多进入后自动就是中文界面的国际网站就是通过读取这个头的值实现的。
+Connection Keep-Alive。一般情况下，一旦Web服务器向浏览器发送了请求数据，它就要关闭TCP连接，然后如果浏览器或者服务器在其头信息加入了Connection:keep-alive，则TCP连接在发送后将仍然保持打开状态，于是，浏览器可以继续通过相同的连接发送请求。保持连接节省了为每个请求建立新连接所需的时间，还节约了网络带宽。
+Cookie是浏览器向服务器发送和当前网站关联的Cookie，这样在服务器端也能读取浏览器端的Cookie了
+User-Agent为浏览器的版本信息。通过这个信息可以读取浏览器是IE还是FireFox、支持的插件、.Net版本等。
+
+
+
+响应报文示例
+
+------响应行------
+HTTP/1.1 200OK
+------状态行------
+Server:ASP.NET Development Server/10.0.0.0
+Date:Sun,27 Mar 2011 08:46:17 GMT
+X-AspNet-Version:2.0.5.727
+Cache-Control:private
+Content-Type:text/html;charset=utf-8
+Content-Length:813
+Connection:Close
+------空行------
+
+------响应体------
+<html>
+	<head><title>FirstShower</title></head>
+	<body>。。。</body>
+</html>
+
+
+
+服务器返回的报文
+
+Server: Cassini/3.5.0.5 表示服务器的类型
+Content-Type: text/html; charset=utf-8 表示返回数据的类型
+服务器通过Content-Type告诉客户端响应的数据的类型，这样浏览器就根据返回数据的类型来进行不同的处理，如果是图片类型就显示，如果是文本类型就直接显示内容，如果用html类型就用浏览器显示内容，如果是下载类型就弹出下载工具等。
+常用Content-Type：text/HTML、image/GIF、image/JPEG、text/plain、text/javascript、application/x-excel 、application/octet-stream（二进制文件）
+Content-Length: 19944表示响应报文体的字节长度，报文头只是描述，返回的具体数据（比如HTML文本、图片数据等）在两个回车之后的内容中。
+
+
+
+浏览器向服务器发出请求，服务器处理可能是成功、可能是失败、可能没有权限访问等原因，服务器会通过响应码来告诉浏览器处理结果。
+"200" : OK
+"302" : Found 重定向.
+"400" : Bad Request 错误请求，发出错误的不符合Http协议的请求
+"403" : Forbidden 禁止
+"404" : Not Found 未找到。演示访问一个不存在的页面看报文
+"500" : Internal Server Error 服务器内部错误。演示页面抛出异常。
+"503" : Service Unavailable。一般是访问人数过多。
+200段是成功；300段需要对请求做进一步的处理；400段表示客户端请求错误；500段是服务器的错误。
+
+
+
+http是无状态的，不会记得“上个请求***”，所以哪怕是同一个页面中的js、css、jpg也都要重复的提交Accept-Language、Accept-Encoding、Cookie等。
+网页中如果有图片、css、js等外部文件的话图片、css、js都在单独的请求中，也就是并不是页面的所有内容都在一个请求中完成，而是每个资源一个请求。
+一般情况下，只有浏览器请求服务器端，服务器端才有给浏览器响应数据，服务器不会主动向浏览器推送数据，这样是安全考虑，也是提高服务器的性能考虑。如果要服务器向浏览器推送数据，则需要使用ServerPush(ajax隔一段时间到服务器请求最新的数据)等额外的技术。 
+Http是“请求—响应”的工作方式。
+断点续传的原理。多线程下载基于断点续传。
+
+
+
+
+
+短连接：发送请求响应完 断掉
+长连接（http1.0后）：发送请求 响应完  进入等待
+
+http协议1.1版本前，都是使用的短连接：也就是浏览器发送任何一次请求来，服务器响应后会立即断开当前连接；如果浏览器再次请求，需要重建连接。
+http协议1.1版本：开始使用长连接：服务器接收一次请求并发送回响应报文后，会等待一段时间，这段时间里如果该浏览器继续发送新的请求的话可以直接使用当前连接；但是如果超过这段时间，那么服务器就会断开当前连接。
+
+
+
+浏览器向服务器传参：
+get：地址栏输入url/超链接/window.Location/表单 method=get
+post：表单 method=post
+
+服务器接收浏览器发送来的数据：
+Context.Request.Form["name"] -- post
+Context.Request.QueryString["Name"] -- get
+
+Context.Request.Redirect("a.html") //重定向
+http/1.1 302 Found
+Location:1.html
+
+响应报文 把302状态码 和location 发给浏览器 
+
+
+------------------------------HTTP协议 e------------------------------
+
+
+------------------------------socket s------------------------------
+
+socket 进程通信机制。套接字。用于描述IP地址和端口，是一个通信链的句柄。
+两种类型：
+流式socket（stream）
+是一种面向连接的socket，针对于面向连接的tcp服务应用，安全，但是效率低；
+数据报式socket（datagram）
+是一种无连接的socket，对应于无连接的udp服务应用。不安全（丢失），顺序混乱，在接收端要分析重排及要求重发，但效率高。
+
+
+UDP数据包套接字的数据发送方式
+将数据拆成很多份，然后都发到对方去，但是对方接受到数据的顺序不一定就是发送的次序；
+发送出去的数据不一定就能顺利达到；
+接收方验证所有包齐全后，要重新按照包的发送顺序组建数据。
+
+TCP流式套接字的数据发送方式
+在发送数据前，会先经历TCP协议的三次握手协议来建立连接，然后通过连接有次序的将数据发送给接收方，接收方拿到数据后会告诉发送方，数据接收完毕。
+如果发送超时，那么发送方会再次发送数据。
+但是因为连接一直在发送期间保持，所以比较占用资源。
+
+
+-------- 一般应用模式 --------
+服务端welcoming socket 开始监听端口。（负责监听客户端连接信息）
+客户端client socket 连接服务端指定端口。（负责接收和发送服务端消息）
+服务端welcoming socket 监听到客户端连接，创建connection socket。（负责和客户端通信）
+
+服务端的socket（至少需要两个）
+一个负责接收客户端连接请求（但不负责与客户端通信）
+每成功接收到一个客户端的连接便在服务端产生一个对应的负责通信的socket
+	在接收到客户端连接时创建。
+	为每个连接成功的客户端请求在服务端都创建一个对应的socket（负责和客户端通信）。
+
+客户端socket
+	必须指定要连接的服务端地址和端口。
+	通过创建一个socket对象来初始化一个到服务器端的TCP连接。
+
+-------- 通讯过程 --------
+服务端
+	申请一个socket
+	绑定到一个ip地址和端口
+	开启监听，等待接收连接
+客户端
+	申请一个socket
+	连接服务器（指明ip地址和端口号）
+服务器端接到连接请求后，产生一个新的socket（端口大于1024）与客户端建立连接并进行通讯，原监听socket继续监听。
+
+-------- socket构造函数 --------
+public socket(AddressFamily addressFamily,SocketType socketType,ProtocolType protocolType)
+	AddressFamily：成员指定socket用来解析地址的寻址方案。例如：InterNetwork指示当socket使用一个ip版本4地址连接。
+	SocketType：定义要打开的socket的类型。
+	Socket 类使用ProtocolType 枚举向Windows Sockets API通知所请求的协议
+
+mySocket = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
+
+
+注意：
+至少要定义一个要连接的远程主机的IP和端口号。
+端口号必须在1和65535之间，最好在1024以后。
+要连接的远程主机必须正在监听指定端口，也就是说你无法随意连接远程主机。
+
+
+IPAddress addr = IPAddress.Parse("127.0.0.1");
+IPEndPoint endp = new IPEndPoint(addr, 10001);
+服务端先绑定：serverWelcomeSocket.Bind(endp)
+客户端再连接：clientSocket.Connect(endp)
+
+一个socket一次只能连接一台主机。
+socket关闭后无法再次使用。
+每个socket对象只能一台远程主机连接。如果你想连接到多台远程主机，必须创建多个socket对象。
+
+
+socket方法
+
+---------相关类---------
+IPAddress类：包含了一个IP地址
+IPEndPoint类：包含了一对IP地址和端口号
+
+---------方法-----------
+Socket()：创建一个Socket
+Bind()：绑定一个本地的IP和端口号(IPEndPoint)
+Listen()：让Socket侦听传入的连接尝试，并指定侦听队列容量。
+Connect()：初始化与另一个Socket的连接。
+Accept()：接收连接并返回一个新的Socket。
+Send()：输出数据到Socket。
+Receive()：从Socket中读取数据。
+Close()：关闭Socket(销毁连接)。
+
+
+Control.CheckForIllegalCrossThreadCalls = false;//取消跨线程检查
+
+Socket socketServer  = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
+IPAddress address = IPAddress.Parse(txtIP.Text);
+IPEndPoint endPoint = new IPEndPoint(address, Convert.ToInt32(txtPort.Text));
+//监听套接字绑定到端口上
+socketServer.Bind(endPoint);
+//设置监听队列的最大长度
+socketServer.Listen(10);
+//监听并接收客户端连接请求，如果有连接过来，则返回一个新的负责通信的套接字。
+//但是Accept方法会阻断当前线程
+Socket socketMsg = socketServer.Accept();
+
+//客户端终结点添加到listview
+string clientKey = sokMsg.RemoteEndPoint.ToString();
+listViewOnline.Items.Add(clientKey,clientKey,"");
+//将通信套接字添加到集合中
+dictSocket.Add(clientKey, sokMsg);
+txtMsg.AppendText("有客户端连接！");
+
+//创建通信线程，负责通过通信套接字的receive接收客户端发送来的消息。
+Thread threadRecMsg = new Thread(WatchMsg);
+threadRecMsg.IsBackground = true;
+threadRecMsg.Name = "threadRecMsg";
+threadRecMsg.Start(sokMsg);
+
+/// 等待接收客户端发来的消息
+void WatchMsg(object sok)
+{
+	Socket sokMsg=null;
+	try
+	{
+                while (isWatch)
+                {
+                    sokMsg = sok as Socket;
+                    //准备好缓存空间
+                    byte[] arrMsg = new byte[1024 * 1024];
+                    //通信套接字接收客户端发送过来的消息数据存入缓存，并返回接收到的数据长度。
+                    int length = sokMsg.Receive(arrMsg);
+                    string msg = Encoding.UTF8.GetString(arrMsg, 0, arrMsg.Length);
+                    txtMsg.AppendText("客户端说：" + msg);
+                }
+              
+            }
+            catch (Exception ex)
+            {
+                //throw;
+            }
+            finally
+            {
+                string clientKey = sokMsg.RemoteEndPoint.ToString();
+                PringMsg("客户端断开连接："+ clientKey);
+                dictSocket.Remove(clientKey);
+                listViewOnline.Items.RemoveByKey(clientKey);
+                sokMsg.Close();
+                sokMsg.Dispose();
+            }
+
+        }
+
+
+
+IPAddress address = IPAddress.Parse(txtIP.Text);
+IPEndPoint endPoint = new IPEndPoint(address, Convert.ToInt32(txtPort.Text.Trim()));
+Socket socketClient = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+socketClient.Connect(endPoint);
+byte[] arrMsg = new byte[1024 * 1024];
+int realLength = socketClient.Receive(arrMsg);
+string strMsg=Encoding.UTF8.GetString(arrMsg,0,realLength);
+
+//给服务端发送消息
+string msgSend=“给服务端发送的消息”；
+byte[] arrMsg=Encoding.UTF8.GetBytes(msgSend);
+socketClient.Send(arrMsg);
+
+
+
+------------------------------socket e------------------------------
+
+
+
+----------------------------------知识小结---------------------------------------
+
+ref:引用传参，侧重于在方法中一定要修改参数。
+out：输出参数，侧重于输出：调用方法可以不赋值，但方法里返回前必须赋值。
+params：可变参数，只能修饰数组类型；只能在方法参数列表的最后。
+
+
+public void Say(string sname,params string[] sarr)
+{
+	Console.WriteLine(sarr.Length);//不会报错，输出0
+}
+Say("啊");//如果没有为可变参数赋值，那么可变参数会自动初始化成0个长度的数组
+
+方法递归（循环）：方法自己调用自己，在方法中一定要有跳出条件。
+
+
+面向对象
+
+分析对象--名词提炼法：提炼【类的名字】。
+类与对象的关系：类是设计图纸，对象是具体的实现。
+类与对象的区别：类是抽象，对象是具体。对象是按照类来创建的。
+clr加载程序集时创建类，类只占一块内存。一个对象占一块内存。
+
+类的定义  访问修饰符 class 类名{}
+类的实例化 类名 对象名 =new 类名();
+new关键字：开辟堆空间，创建对象，调用对象构造函数。
+属性：本质就是get_set方法。作用：为对字段的操作设置规则（约束）。
+构造函数：作用：初始化类的内部成员字段。
+1、当类里没有写任何构造函数，那么clr会在调用时自动添加一个无参的构造函数。
+2、如果类里有任意一个构造函数，那么久不会自动添加。
+3、构造函数有重载。
+
+类图：
+析构函数：GC类销毁对象时调用对象的析构函数。主要用于程序员释放对象所占资源。
+
+命名空间：“c#虚拟文件夹”，作用：避免项目中类出现重名。
+
+
+对象的引用
+.NET值类型、引用类型
+值类型：int,double,bool,char,struct,enum,decimal 
+引用类型： string,数组，集合，class，delegate，interface，object
+
+
+
+为什么要有继承：代码复用。更重要的是实现多态。继承关系侧重于一个族群的关系。
+冗余解决方法
+继承的符号：public class Son：Father{}
+
+显示调用父类构造函数
+public class Son:Father
+{
+  public Son():base()
+  {}
+}
+
+里氏替换原则：父类 o=new 子类();
+
+多态：一个对象，多种形态。
+一个父类对象里有虚方法或抽象方法，那么子类继承后重写这些方法。
+当出现父类 o=new 子类();
+o.父类虚方法();//此时真正执行的是子类里重写的方法。
+
+
+抽象方法：只能定义在抽象类中。抽象方法不能有方法体。
+抽象类：不能实例化。可以定义抽象方法--给子类的规则；也可以定义非抽象方法；
+
+接口本质：特殊的抽象类。
+接口作用：完完全全定义规则。--但是，真正的实现还是依靠多态完成。
+IFlyable fly=new Fly();
+面向接口编程：不关系接口的具体实现，直接通过调用接口方法来完成编码。
+
+
+
+
+
+静态方法：静态成员直接属于类。
+类名.静态方法()来访问。
+在第一次调用时才加载进静态成员表。
+
+实例方法：实例成员直接属于对象。(new)
+对象.实例方法()来访问
+在类被第一次访问的时候，方法就已经加载到类的实例方法表中了。
+注意：每个实例对象里都保存了一个指针，指向该类的实例方法表。
+
+类与成员修饰符：public，internal
+
+
+ArrayList HashTable
+
+//object里的Equals比较的是地址
+//默认ArrayList删除元素时，使用的是Object的Equals方法，比较的是两个元素的地址。
+//而重写Equals后，比较的是重写后的方法。
+//capacity 容量
+//一旦扩容不会改变
+
+//ArrayList真正储存数据的是Object[]数组
+
+ArrayList al=new ArrayList();
+al.add(1);//第一次添加数据时，object数组被初始化成4个长度的数组对象。
+al.add(1);
+al.add(1);
+al.add(1);
+al.add(1);//容量已满，进行扩容，数组长度*2。
+al.add(1);
+
+
+
+索引器
+public class MyCollection
+{
+  private ArrayList arr=new ArrayList();
+  public void Add(object o)
+  {
+    arr.Add(o);
+  }
+  public object this[int index]
+  {
+    return arr[index];
+  }
+  public object this[string key]
+  {
+    return arr[0];
+  }
+
+}
+
+MyCollection m=new MyCollection();
+m.Add(0);
+object o=m[0];
+object o=m["aa"];
+
+
+
+类和结构
+类型：结构：值类型 类：引用类型
+声明的语法：class struct
+类new 1、在堆中开辟空间。2、堆中创建对象。3、调用构造函数初始化。
+结构new的对象在栈中开辟空间。
+结构的new只做了一件事情：调用结构的构造函数。
+
+构造函数相同点：无论是结构还是类，本身会有一个默认的无参的构造函数。
+不同点：
+1、类可以继承。结构不能继承。
+2、在类中写了一个新的构造函数后，默认的无参构造函数就没有了。
+在结构中写了一个新的构造函数，默认的无参构造函数依然存在。
+3、在类中，构造函数既可以给字段赋值，也可以给属性赋值。构造函数可以重载。
+结构中，构造函数只能给字段赋值。要给全部的字段赋值，不能给部分字段赋值。
+
+如果只是单独存储数据，推荐使用结构。
+如果想用面向对象的思想开发程序，推荐使用类。结构并不具备面向对象的特征。
+
+
+
+
+			类			结构
+类型			引用			值
+声明语法		class			struct
+new		1、在堆中开辟空间。		栈中开辟空间调用构造函数
+		2、堆中创建对象。
+		3、调用构造函数初始化。
+继承			可以			不能
+构造函数	1、写了新构造函数后，		1、写了新构造函数后默认的无参构造函数依然存在。
+		默认的无参构造函数就没有了。	2、只能给字段赋值，且要给全部字段赋值。
+		2、可以给字段、属性赋值。
+
+
+
+
+
+
+Where	过滤；延迟
+Select	选择；延迟
+Distinct	查询不重复的结果集；延迟
+Count	返回集合中的元素个数，返回INT类型；不延迟
+LongCount	返回集合中的元素个数，返回LONG类型；不延迟
+Sum	返回集合中数值类型元素之和，集合应为INT类型集合；不延迟
+Min	返回集合中元素的最小值；不延迟
+Max	返回集合中元素的最大值；不延迟
+Average	返回集合中的数值类型元素的平均值。集合应为数字类型集合，其返回值类型为double；不延迟
+Aggregate	根据输入的表达式获取聚合值；不延迟
+
+
+
+
+-----------------------------------集合----------------------------------------
+
+ArrayList
+HashTable
+List
+Dictionary<key,value>
+
+
+
+string[]和List<string> 数量达到 62592 array效率比list高  
+
+int[]和List<int> 数量达到 70000  array效率比list高 （不同的硬件配置会有不同的结果）
+
+
+
+
+集合类
+
+常用操作 添加、遍历、移除
+命名空间System.Collections
+ArrayList可变长度数组，使用类似于数组
+	属性Capacity（集合众可以容纳元素的个数，翻倍增长）;Count(集合中实际存放的元素的个数。)
+	方法
+		Add() AddRange(lcollection c) RemoveAt() Clear()
+		Contains() ToArray() Sort()排序\Reverse()反转
+
+Hashtable 键值对的集合，类似于字典，Hashtable在查找元素的时候，速度很快。
+	Add(Object key,object value);
+	hash["key"]
+	hash["key"]="修改";
+	.ContainsKey("key");
+	Remove("key");
+	遍历；
+	hash.Keys;
+	hash.Values/DictionaryEntry
+
+
+----------------泛型
+
+
+泛型是具有占位符（类型参数）的类、结构、接口和方法，这些占位符是类、结构、接口和方法所存储或使用第一个或多个类型的占位符。
+泛型集合类可以将类型参数用作它所存储的对象的类型的占位符：类型参数作为其字段的类型和其方法的参数类型出现。
+
+泛型：就是类的一个参数（参数必须是一个类，不能是对象）也就是类的一个占位符参数
+为什么有泛型：实现算法重用（重用类的结构）。避免装箱拆箱。类型安全，编译时会自动检测参数类型。
+
+将算法和数据结构完全分离开来
+
+
+泛型类型：泛型类、方法、接口、委托、枚举？
+
+
+多个泛型约束
+class test<T,Tkey>:where T : class where Tkey : struct
+
+1、default
+
+在泛型中，要为某个使用泛型的变量初始化值，可是我们需要考虑的是这个泛型可能是引用类型，也可能是值类型，这时我们可以借助default来完成初始化复制。T value = default(T);如果T是引用类型，value = null,如果是T是值类型，value = 0.
+
+2、where
+
+                                       约束                                                                  说明
+
+                                where T:struct                                     使用结构约束，类型T必须是值类型
+
+                                where T:calss                                       类约束指定，类型T必须是引用类型
+
+                                where T:IFoo                                            指定类型T必须执行结构IFoo
+
+                                where T:Foo                                            指定类型T必须派生于基类Foo
+
+                               where T:new()                                       指定类型T必须有一个默认构造函数 
+
+                                 where T:U                                          类型T派生于泛型类型V（裸类型约束）
+
+
+
+
+EventHandler<T>
+Func
+
+
+
+
+Lambda表达式
+是一种可用于创建委托或表达式目录树类型的匿名函数。
+通过Lambda表达式，可写入可作为参数传递或作为函数调用值返回的本地函数。
+Lambda表达式对于编写linq查询表达式特别有用。
+
+
+
+程序集:某个项目中所有代码以及嵌入式资源的集合，还包含程序集的信息。
+
+--------------------------反射
+反射：
+1、通过反射可以读取物理文件程序集内的代码内容。
+2、可以通过反射，根据类名(字符串)动态的创建类的对象。
+3、可以在程序运行时，动态地获得对象里的信息。（方法、属性、字段、索引）
+4、可以根据成员名称（字符串）来调用执行对象里对应的成员。
+
+GAC：全局程序集缓存。公用的Assembly放到GAC中。
+
+Assembly类是对Assembly的描述
+AppDomain.CurrentDomain.GetAssemblies()获得程序所有的Assembly。
+Assembly.LoadFile()，动态从文件加载Assembly，不需要再编译时引用。
+
+//获得正在运行的所有程序集
+Assembly[] aseArr = AppDomain.CurrentDomain.GetAssemblies();
+Assembly ase = Assembly.LoadFrom(@"d:\test\Mode.dll");
+
+
+ public class Person
+    {
+        private string strName = "地方";
+        private int age = 18;
+        [testAttribute(isDisplay =false)]
+        public int Age
+        {
+            get
+            {
+                return age;
+            }
+
+            set
+            {
+                age = value;
+            }
+        }
+        [testAttribute(isDisplay = true)]
+        public string StrName
+        {
+            get
+            {
+                return strName;
+            }
+
+            set
+            {
+                strName = value;
+            }
+        }
+
+        public string SayHi(string str)
+        {
+            return strName + "大家好!"+str;
+        }
+
+    }
+
+
+class加载到程序集后成为了一个类型对象 class person
+
+Type就是用来保存某个类里成员信息的集合。
+获取Type两种方式：
+Type t = typeof(Model.Person);
+Type type= obj.GetType();
+
+一个类型对应一个Type类的对象，通过Type对象可以获得类的所有的定义信息，比如类有哪些属性、方法等。
+
+Type type = typeof(Person);
+Type t = person.GetType();
+FieldInfo[] fields = type.GetFields();//获得类里所有的字段信息（字段名、字段类型，没有字段的值）
+MethodInfo[] methods = type.GetMethods();//获得类里所有的方法信息
+PropertyInfo[] pros = type.GetProperties();//获得类里所有的属性信息
+
+type.GetConstructor();//获得构造函数
+type.GetEvents();//获得事件
+
+
+string strClassName = "Model."+ textBox1.Text;
+type = ase.GetType(strClassName);//根据字符串，从程序集中获得一个类型的Type
+objNew = Activator.CreateInstance(type);//根据type创建对象
+//获得属性名
+string strProName = textBox2.Text;
+//获得属性信息对象
+PropertyInfo pro = type.GetProperty(strProName);
+pro.SetValue(objNew, "这个世界很美好，值得我们为之奋斗！",null);
+string strProValue = pro.GetValue(objNew, null).ToString();
+MessageBox.Show(strProValue);
+MethodInfo method = type.GetMethod("SayHi");
+//通过方法信息对象的Invoke方法，调用了objNew对象的SayHi方法并为它传入了一个参数
+MessageBox.Show(method.Invoke(objNew, new object[1] { "jing" }).ToString());
+
+
+public class testFather
+    {
+        public string aa { get; set; }
+    }
+public interface IRun
+    {
+         
+    }
+ public class testSun1
+    {
+    }
+public class testSun:testFather,IRun
+    {
+        public string name { get; set; }
+
+        public string Shout()
+        {
+            return "shout";
+        }
+
+        public string Shout(string nameObj)
+        {
+            return name + " 参数：" + nameObj;
+        }
+
+        public string Shout(string nameObj,int intObj)
+        {
+            return string.Format("{0} 参数1：{1} 参数2：{2}", name, nameObj, intObj);
+        }
+
+        private string priFunc()
+        {
+            return "私有方法";
+        }
+
+    }
+
+
+//判断testSun是否继承于testFather(类和接口都可以)，实质是判断testSun是否可强转成testFather
+typeof(testFather).IsAssignableFrom(typeof(testSun))
+
+//判断对象是否是某个type所对应的实例
+testSun sun = new testSun();
+//bool isInstance = typeSun.IsInstanceOfType(sun);
+
+//判断某个类是否是另一个类的子类，只能用来判断类的继承，不能用来判断接口。
+//bool isSubF= typeSun.IsSubclassOf(typeFather);
+
+//MethodInfo method = typeSun.GetMethod("Shout");
+//MessageBox.Show(method.Invoke(sun, null).ToString() );  //method.Invoke(sun,null));
+
+//获得带一个参数的Shout方法
+//MethodInfo methodWidthPara = typeSun.GetMethod("Shout", new Type[] { typeof(string) } );
+//string str=methodWidthPara.Invoke(sun,new object[] { "123"}).ToString() ;
+
+//调用私有方法
+//MethodInfo methodPrivate = typeSun.GetMethod("priFunc",BindingFlags.NonPublic|BindingFlags.Instance);
+//MessageBox.Show(methodPrivate.Invoke(sun,null).ToString() );
+
+//string strClassName = "Mode.Person";
+//Assembly ase = Assembly.LoadFrom(@"d:\test\Mode.dll");
+
+//Type type1 = ase.GetType(strClassName);
+// object objNew = Activator.CreateInstance(type1);
+//Person objNew =(Person) Activator.CreateInstance(type1);
+
+
+[AttributeUsage(AttributeTargets.Property)]
+public class testAttribute : Attribute
+{
+     public bool isDisplay;
+}
+
+PropertyInfo[] infos = typeof(Person).GetProperties();
+foreach (PropertyInfo item in infos)
+{
+//IsDefined 是否为指定类型的自定义特性随即应用于指定的成员
+if (item.IsDefined(typeof(testAttribute)))
+{
+      MessageBox.Show("Test");
+}
+}
+
+
+public string GetEnumDiscription(Enum value)
+{
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+            DescriptionAttribute attribute = (DescriptionAttribute)fi.GetCustomAttribute(typeof(DescriptionAttribute));
+            return attribute.Description;
+}
+
+
+
+
+
+
+单例模式实现
+单例化的对象构造函数私有化。提供一个静态方法返回一个实例化对象。
+
+
+
+
+开机 -- bios -- 启动操作系统
+
+电脑开机时，bios会去一个硬盘指定的未知寻找系统引导文件从而启动操作系统。
+
+电池 维护 bios 的一些设置
+
+电池没电 bios 还原出厂 默认设置没了
+bios存在介质上 
+
+进程 隔离 操作系统在内存中的代码
+
+
+
+
+-------------------------------页面生命周期 start------------------------------
+
+步骤大致分为4类：
+1.初始化 PreInit , Init , InitComplete
+2.加载数据和页面 LoadState , ProcessPostDate , PreLoad , Load , ProcessPostData(第二次) ...
+3.触发事件 ChangedEvents PostBackEvent
+4.保存状态并呈现页面 SaveState , SaveStateComplete ,Render
+
+
+
+初始化
+加载试图状态
+处理回发数据
+页面加载
+处理回发数据
+回发更改通知
+处理回发事件
+页面预渲染
+保持状态
+渲染
+卸载
+
+
+PreInit
+Init
+InitComplete
+LoadState
+ProcessPostData
+PreLoad
+Load
+ProcessPostData
+ChangedEvents
+PostBackEvent
+LoadComplete
+PreRender
+PreRenderComplete
+SaveState
+SaveStateComplete
+Render
+Unload
+
+
+两次ProcessPostData，
+第一次处理保证了在执行页面加载之前，所有的数据从页面上被读入，这样页面加载时就可以访问这些数据。
+第二次是为了使页面加载时新建立的控件中的数据能够得到处理。
+
+
+请求编译流程图
+客户端--服务器--iis--.NET Framework--判断在内存中是否有机器码-非-判断C盘中是否有中间代码文件-非-将Demo.aspx和制定的Demo.aspx.cs页面类进行合并用中间语言（IL）编译成一个类，默认储存在C盘中。
+			回应数据			      是			     是 交给JIT			交给JIT
+			交给CPU执行			 交给CPU执行 交给JIT
+			交给JIT（即使编译器）编译成机器码，储存在内存中
+
+
+
+
+1、webform前后台页面（aspx/aspx.cs）文件在被访问时会被编译成类。前台页面类继承于后台页面类。
+2、被访问时，服务器会创建前台页面类对象来作为处理浏览器请求的对象。
+3、前台类对象是如何结合后台类的方法生成整个页面的html代码的呢？ 
+被请求时，生成页面控件对象树。
+控件树负责组织整个页面的内容。（_BuildControlTree()--生成控件树方法）
+生成页面控件树的目的：是为了在服务器运行页面类对象时，可以根据用户的某些操作及环境的某些变化来修改要生成的html代码。
+正因为最终页面对象是要生成html代码的，所以在创建封装了html代码的控件树时，就要依次添加控件。
+
+
+
+页面生命周期：
+客户端发送请求到服务器，服务器通过扩展名扫描映射表，交给对应的扩展程序（aspnet_isapi.dll）,
+扩展程序把请求传入framework，即调用ISAPIRuntime pr方法 调用 HttpRuntime pr方法，会创建HttpWorkerRequest ，将请求封装到HttpContext，（将workerrequest请求报文封装到HttpRequest，响应报文封装到HttpResponse）
+通过HttpApplicationFactory创建HttpApplication负责处理整个请求--调用pr方法（ProcessRequest(HttpContext context)），将HttpContext传入application，进入请求管道，
+第8个事件 根据HttpContext里的HttpRequest找到被请求报文里的页面路径(path)，根据反射创建页面对象，转成IHttpHandler接口对象。
+执行11，12事件之间调用前面创建页面的pr方法，同时将上下文传入。
+执行完后调用FinishRequest方法，生成响应报文，通过HttpWorkerRequest，将响应报文发回给扩展程序，交给iis，iis通过套接字将响应报文发给浏览器。
+
+
+8 -- PostMapRequestHandler 反射创建页面对象，并转成IHttpHandler接口对象。
+9 - 11 有一个事件会接收浏览器发过来的sessionid，并根据此值到服务器的session池中找到对应的session对象，并将它赋值给页面对象的session属性（Page.HttpContext.HttpSessionState）。
+11 - 12  执行接口对象 调用pr方法，调用父类的pr方法，在此方法中，父类调用了父类的FrameWorkInitialize()，但因被页面类重写了，所以执行的是当前页面类的FrameWorkInitialize(),在中间就调用了 _buildControlTree()方法，
+然后调用ProcessRequestMain方法，在此方法里面，执行了整个页面生命周期。
+
+9 - 11 有一个事件（该事件：先尝试将页面类对象转成IRequiresSessionState接口对象，如果转换不成功，则不加载Session对象，如果转换成功则从请求报文头中获得Cookie里的SessionId，然后到服务器的Session池中根据SessionId找到Session对象，赋给上下文中的session对象。
+11-12 执行页面对象pr方法时，将上下文中的session对象赋给page对象的session属性。）
+
+
+
+_buildControlTree()方法来构造控件树   
+根节点 -- default_aspx
+Controls控件集合属性，属于Control类里的，因为ASP.NET里所有的控件类都间接继承于Control类，所以每个控件都有Controls属性来保存它的子节点。
+页面上所有的代码（包括html）都以控件对象的方式存放于此集合中。
+
+执行页面生命周期前一部分（包括后台代码）
+LoadState（1、分析请求报文里名为_VIEWSATTE的隐藏域，将里面的字符串反base64编码，然后反序列化还原成集合对象；将其中用户添加的属性存入页面对象的ViewState属性中。2、同时还将服务器端控件的属性值从隐藏域中还原。）
+PageLoad
+SaveState（将所有的服务器端控件的属性及值保存到ViewState属性中。最后在页面生成html代码的时候，遍历ViewState中的键值集合，然后将里面的序列化，将序列化后的字符串用Base64编码，生成名为_VIEWSTATE的隐藏域。）
+(生命周期中有很多事件，程序员可以注册方法，并在方法中修改控件树里某个控件对象的属性)
+调用页面Render方法，生成html代码  遍历整个控件树，调用每个控件的render方法，根据控件属性生成并拼成整个页面的html代码
+
+存入response
+render方法要传入一个TextWrite对象，遍历控件树时调用每个控件的render方法都会传入同一个TextWriter，所以每个控件生成的html代码都按照次序存在了同一个TextWrite中，最后只要将这个TextWrite里的字符串都输出就可以形成整个页面。
+
+LoadState
+获得表单提交过来的隐藏域__VIEWSTATE里的值，从中找出
+1、属于服务器控件的值，然后赋给控件树立对应的控件属性。
+2、属于用户通过VIEWSTATE["KEY"]=VALUE方式添加的值，并赋给页面对象的VIEWSTATE属性。
+
+PageLoad
+用户可能要从页面VIEWSTATE属性中获取之前保存的键值对，所以在Page_Load之前，必须将表单隐藏域里的值还原到页面VIEWSTATE属性中。
+
+SaveState
+遍历控件树所有的控件，然后将需要保存的属性和数据以及控件名称保存到VIEWSTATE中。
+
+Render
+render的时候要遍历控件树，调用每个控件的render方法从而生成整个页面的html代码。
+但当它执行到HtmlForm表单控件的时候，此控件的Render方法里会去读取ViewState里的每个键值对，并将他们序列化成字符串，然后进行base64编码得到一个新的字符串，最终生成一个<input type="hidden" name="__VIEWSTATE"> 的隐藏域的value中。
+
+
+没有runatserver的控件页面
+会有一个 CreateResourceBasedLiteralCotrol 方法以委托的方式加到当前页面
+
+以字符串资源的方式添加到前台
+
+_BuildControlTree()
+{
+this.InitializeCulture();
+IParserAccessor accessor=_ctrl;
+accessor.AddParsedSubObject(base.CreateResourceBasedLiteralCotrol(0,0x144,true));
+}
+
+没有runatserver的控件，但前台有输出的页面
+
+<%=str %>
+string str="ddd";
+
+void _Render_control1(HtmlTextWriter w,Control parameterContainer)
+{
+base.WriteUTF8ResourceString(_w,0,0x102,true);
+_w.Write(base.str);
+_w.Write("\r\n </div>\r\n </form>\r\n</body>\r\n</html>\r\n");
+}
+
+
+子页面的buildControlTree
+
+private void _BuildControlTree(母版子页面_aspx_ctrl)
+{
+_ctrl.Title="";
+_ctrl.MasterPageFile="~/母版页.master";
+this.InitializeCulture();
+base.AddContentTemplate("head",new CompiledTemplateBuilder(new BuildTemplateMethod(this._BuildControlContent1)));
+base.AddContentTemplate("ContentPlaceHolder1",new CompiledTemplateBuilder(new BuildTemplateMethod(this._BuildControlContent2)));
+IParserAccessor accessor=_ctrl;
+accessor.AddParsedSubObject(new LiteralControl("\r\n"));
+accessor.AddParsedSubObject(new LiteralControl("\r\n\r\n"));
+}
+
+子页面的Page_Load先执行
+
+
+
+----------缓存
+
+如果每次进入页面的时候都查询数据库生成页面内容的话，如果访问量非常大，则网站性能会非常差。而如果只有第一次访问的时候才查询数据库生成页面内容，以后都直接输出内容，则能提高系统性能。这样无论有多少人访问都只访问一次数据库，数据库压力不变。
+缓存(Cache)是一种用空间换取时间的技术，存在于计算机中很多地方，用来将一些慢速设备中的常用数据保存在快速设备中，取数据的时候直接从快速设备中取。比如CPU二级缓存、内存、windows文件读取缓存。
+缓存存在失效的问题：为了保证从缓存中读取数据和慢速数据（数据库）中数据一致，则需要在慢速数据（数据库）中对应的数据发生变化的时候，清除缓存中相应的数据（缓存依赖）。
+缓存是改进网站性能的第一个手段，就像索引是改进数据库性能的第一个手段一样。ASP.net缓存主要分为：页面缓存(中庸)、数据源缓存(最不灵活的)、自定义数据缓存(灵活)这三种主要类型。
+
+
+页面缓存
+给页面添加<%@ OutputCache Duration=“15”  VaryByParam=“none”%>Duration表示缓存时间，以秒为单位。
+在Page_Load处设置断点、修改数据库数据测试。这个缓存是在服务器缓存的，不是在客户端，因为用HttpWatch还是能看到向服务器提交的请求的，只不过服务器看到有缓存就没有再执行页面类。一般只有看帖、看新闻、看视频的页面才缓存，CUD的页面没必要缓存。
+缓存是针对所有这个页面的访问者。这样1个访问者和1万个访问者、一次访问和100万次访问对数据库的压力是一样的。
+对于看新闻页面来讲，如果如上设置的话，则会缓存在第一个看到的新闻，因为?id=2、?id=3只是页面的不同参数而已.
+为了能让不同的新闻各自缓存，设置VaryByParam=“id”，表示对于相同页面的不同的id参数进行单独缓存。
+如果有多个确定缓存的参数，则将参数名用分号隔开即可，比如VaryByParam=“id;number”。
+如果想让任何不同的查询字符串都创建不同的缓存，则设置VaryByParam="*"，一般情况下设置“*”就足够。
+
+数据源缓存
+设定ObjectDataSource的CacheDuration（缓存时间：秒），EnableCaching=true。这样每隔CacheDuration指定的时间段才调用SelectMethod指定的方法来执行数据库查询，其他时候都是直接返回缓存的数据。取数据的过程缓存，在缓存期间，绑定控件向ObjectDataSource要数据， ObjectDataSource直接将缓存的数据返回给控件，不再去向TypeName指向的类要数据。
+
+
+
+
+
+缓存依赖
+
+依赖于文件内容
+CacheDependency dep=new CacheDependency(filePath);
+
+System.Web.Caching.CacheDependency dep=new CacheDependency("aa.txt");
+Cache.Insert("test",testObj,dep,DateTime.Now.AddSeconds(30),Cache.NoSlidingExpiration);
+
+依赖于数据库内容（轮询机制/通知机制）
+一：轮询机制 –fw主动到数据库检查数据是否改变
+1.使用C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727中的aspnet_regsql.exe：
+注册：aspnet_regsql -S . -E -ed -d 数据库名 -et -t 表名
+删除：aspnet_regsql -S . -E -d 数据库名 -dt -t 表名
+取消数据库缓存依赖: aspnet_regsql -S . -E -dd 数据库名
+数据库名 列出已注册表：aspnet_regsql -S . -E -d 数据库名 -lt
+2.配置web.config(见备注)
+3.数据库依赖对象
+SqlCacheDependency cDep = new SqlCacheDependency("GSSMS", "Students");
+
+
+缓存检测服务，按照配置文件，每隔15s就去数据库查询缓存依赖记录版本改变表，根据sql缓存依赖里提供的表名来查询，如果发现该记录的版本号发生改变，则立即销毁服务器缓存中对应的缓存键值对。
+
+
+
+
+Session深入 -状态提供程序 
+
+Session分三种：
+1.InProc(进程内)-默认就是这种-速度快/但内存小/易丢失
+--------------------------------------------------------------------------
+进程外：可以在IIS或ASPNET服务意外关闭时继续保持状态，注意此时存储到session中的对象必须支持序列化：
+2.StateServer:使用aspnet_state.exe
+2.1修改配置文件：
+2.2<sessionState mode="StateServer" stateConnectionString="tcpip=localhost:42424"/>
+设置是否允许远程使用，位置：C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\aspnet_state\Parameters
+       2.3默认端口号：42424
+       2.4开启服务：我的电脑-管理-服务与应用程序-服务-ASP.NET State Service(ASP.NET 状态服务)
+3.SQLServer
+3.1新建ASPSTATE数据库使用运行Session数据库脚本：
+临时储存区：InstallSqlState.sql & UninstallSqlState.sql
+永久储存区：InstallPersistSqlState.sql & UninstallPersistSqlState.sql(需要使用SQLServerAgent服务-因为调度作业)
+注意：之后配置数据库权限麻烦的话，可以在运行完aspnet_regsql.exe后在数据库中执行你想要使用的sql脚本，就可以不配置权限了。
+
+
+
+全局文件
+添加Web→全局应用程序类，注意文件名不要改。
+全局文件是对Web应用生命周期的一个事件响应的地方
+将Web应用启动时初始化的一些代码写到Application_Start中。应用关闭的时候Application_End调用。
+当一个Session启动的时候Session_Start被调用，Session结束（用户主动退出或者超时结束）Session_End被调用。
+当一个用户请求来的时候Application_BeginRequest方法被调用
+当应用中出现未捕获异常，Application_Error被调用（常考，ASP.Net中的错误处理机制），用HttpContext.Current.Server.GetLastError()获得异常信息，然后用Log4Net记录到日志中。
+
+
+错误页
+当页面发生错误的时候，ASP.Net会将错误信息展示出来（Sqlconnection的错误就能暴露连接字符串），这样一来不好看，二来会泄露网站的内部实现信息，给网站带来安全隐患，因此需要定制错误页，发生错误时显示开发人员定制的页面。404页面放点广告也是好的嘛。
+配置web.config，配置customErrors区域：
+ <customErrors mode="On" defaultRedirect="MyErrorPage.aspx">
+            <error statusCode="403" redirect="NoAccess.htm" />
+            <error statusCode="404" redirect="FileNotFound.htm" />
+        </customErrors>
+mode三个可选值：On：总是显示定制错误页面；Off：不显示定制错误界面，直接显示调用堆栈等异常信息；remoteonly：对于本机的访问显示调用堆栈等异常信息，对于外部用户的显示定制错误页面。一般设置为RemoteOnly，这样发生错误的话，管理员可以在服务器的浏览器中看详细错误信息，普通用户看不到。学习演示的时候mode设置为On，否则看不到定制页。
+
+
+IIS配置
+安装IIS。部署网站（发布或者拷贝都可以）。修改连接字符串，compilation设为false，删掉cs代码
+上传文件夹不给执行权限： 在iis管理器中找到上传文件夹，选择属性--执行权限，设置为“无”。这样哪怕利用漏洞上传了可执行代码到上传文件夹，也无法执行。
+取消所有文件夹的浏览权限，防止用户查看网站的文件列表，在iis管理器中找到主站节点→属性→主目录→取消“目录浏览”。
+IIS管理中，Web服务器扩展，只允许asp.net那几个，其他的CGI、ASP等全部禁止。
+
+
+IHttpModule
+        public void Init(HttpApplication context)
+        {
+            context.BeginRequest += MyBeginRequest;
+        }
+
+        protected void MyBeginRequest(object sender, EventArgs e)
+        {
+            HttpContext contex = (sender as HttpApplication).Context;
+            contex.Response.Write("哈哈哈哈哈");
+        }
+
+
+URL重写(UrlRewrite)
+为什么要URL重写？1、有利于SEO，带参数的URL权重较低；2、地址看起来更正规，推广uid。看看如鹏网的URL重写。
+伪静态：看起来像普通页面，而非动态生成的页面。
+原理：在Global.asax的Application_BeginRequest 中读取Request.Url 得到请求的URL（View-3.aspx），然后用HttpContext.Current.RewritePath(ReWriteUrl)进行重写（也就是交由另外一个页面处理这个请求）(View.aspx?tid=3格式) http://www.cnblogs.com/hd/archive/2005/06/20/177633.html
+也可以使用微软的URLRewrite，只要修改配置文件就可以进行URL重写。照着文档自学配置。见备注
+
+
+CKEditor 集成
+CKEditor原名FckEditor，著名的HTML编辑器，可以在线编辑HTML内容，演示一下。打开。自己人用CKEditor，网友用UBBEditor。
+配置参考文档，主要将ckeditor中的（adapters、images、lang、plugins、skins、themes、ckeditor.js、config.js、contents.css）解压到js目录，然后“显示所有文件”，将ckeditor的目录“包含在项目中”，在发帖页面引用ckeditor.js，然后设置多行文本框的class="ckeditor"（CSS强大）(服务端控件CssClas=" ckeditor "，客户端控件要设定cols、rows属性，一般不直接用html控件)，代码中仍然可以通过TextBox控件的Text属性来访问编辑器内容。
+由于页面提交的时候asp.net会把富文本编辑器中的html内容当成攻击内容，因此需要在aspx中的Page标签中设置 ValidateRequest="false" 来禁用攻击检测（2010中还要根据报错信息修改WebConfig来禁用XSS检测）。
+
+CKFinder是一个CKEditor插件，用来为CKEditor提供文件的上传的功能。将bin\Release下的CKFinder.dll添加到项目的引用；将core、ckfinder.js、ckfinder.html、config.ascx解压到CKFinder自己的目录。按照文档修改CKEditor的config.js，将上传的处理程序设定为CKFinder，注意路径的问题。
+使用测试，在插入超链接、插入图片、插入文件中都有“上传”
+因为上传文件是非常危险的动作，因此在文件上传的时候会进行权限校验。在config.ascx的CheckAuthentication方法中校验是否有权限上传，返回true表示有权限，否则没有权限，一般修改成判断用户是否登录，并且登录用户是有上传权限的用户，可以用Session或者Membership来做。思考：如何实现只有指定IP地址的用户才能上传？
+在SetConfig函数中设置上传文件夹的位置BaseUrl、缩略图的位置，每种类型数据的上传路径、允许上传的文件类型AllowedExtensions等。
+
+RegisterClientStartupScript
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+下面是请求管道中的19个事件.
+
+(1)BeginRequest: 开始处理请求
+
+(2)AuthenticateRequest授权验证请求，获取用户授权信息
+
+(3):PostAuthenticateRequest获取成功
+
+(4): AunthorizeRequest 授权，一般来检查用户是否获得权限
+
+(5):PostAuthorizeRequest:获得授权
+
+(6):ResolveRequestCache:获取页面缓存结果
+
+(7):PostResolveRequestCache 已获取缓存   当前请求映射到MvcHandler（pr）：MvcHandler内部  创建控制器工厂 ，创建控制器，调用action执行，view→response
+
+//action   Handler : PR()
+
+(8):PostMapRequestHandler 创建页面对象
+
+(9):PostAcquireRequestState 获取Session
+
+(10)PostAcquireRequestState 获得Session
+
+(11)PreRequestHandlerExecute:准备执行页面对象
+执行页面对象的ProcessRequest方法
+
+(12)PostRequestHandlerExecute 执行完页面对象了
+
+(13)ReleaseRequestState 释放请求状态
+
+(14)PostReleaseRequestState 已释放请求状态
+
+(15)UpdateRequestCache 更新缓存
+
+(16)PostUpdateRequestCache 已更新缓存
+
+(17)LogRequest 日志记录
+
+(18)PostLogRequest 已完成日志
+
+(19)EndRequest 完成
+
+
+--------------过滤器httpmodule----------------
+
+IHttpModule
+
+namespace MyModule
+{
+    //过滤器里的方法优先于全局配置的方法
+    public class MyTestModule : IHttpModule
+    {
+        public void Init(HttpApplication context)
+        {
+            context.BeginRequest += MyBeginRequest;//new EventHandler(MyBeginRequest);
+        }
+
+        public void MyBeginRequest(object sender,EventArgs e)
+        {
+            HttpApplication application = sender as HttpApplication;
+            application.Context.Response.Write("我是在MyModule里注册到BeginRequest事件上的方法！<br/>");
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+
+    }
+}
+
+添加引用到网站
+配置网站web.config节点
+  <system.webServer>
+    <modules>
+      <add name="myModule" type="MyModule.MyTestModule"></add>
+    </modules>
+  </system.webServer>
+
+
+HttpApplicationFactory 通过 HttpRuntime 
+GetNormalApplicationInstance创建对象
+
+HttpApplicationFactory--GetNormalApplicationInstance(HttpContext context);
+
+通过反射的方式创建了HttpApplication或者Global.asax对象，
+代码 application=(HttpApplication)HttpRuntime.CreateNonPublicInstance(this._theApplicationType);
+调用程序员写的过滤器(HttpModule)集合里的Init方法为HttpApplication对象的事件注册方法。
+
+//在请求管道的第一个事件（BeginRequest）上注册了一个方法
+void Application_BeginRequest(object sender,EventArgs e)
+{
+HttpApplication application= sender as HttpApplication;
+HttpContext context=application.Context;
+//\UserInfo\1 -> userinfo.aspx?id=1
+string[] strPath2=strPath.Split('/');
+string newPath=strPath2[0]+".aspx?id="+strPath2[1];
+string strPath=context.Request.Url.AbsolutePath.ToString();
+
+-----URL重写
+application.Context.RewritePath(newPath);
+//context.Response.Write(newPath);
+//context.Response.End();
+
+//application.Context.RewritePath("aa.aspx");
+
+//判断浏览器发送此次请求的页面是否为我的网站页面，如果不是，则判断为盗链
+//if(!application.Context.Request.UrlReferrer.ToString().StartsWith("域名"))
+//{
+//application.Context.Request.UserHostAddress;
+//application.Context.Response.End();
+//}
+
+application.Context.Response.Write("god ai lao hu you");
+}
+
+
+面向切面编程
+整个请求流程的某个部分截取，在流程的某个部分执行。
+
+
+
+
+
+
+--------------过滤器httpmodule end---------------
+
+
+
+
+-------------------------------页面生命周期 end------------------------------
+
+
+
+---------------------------Mvc Start------------------------
+
+
+InetInfo.exe
+w3svc服务
+aspnet_isapi.dll
+ISAPIRuntime 
+-- PR方法 通过ECB指针初始化一个HttpWorkRequest对象ECB指针不会释放，直到请求结束也是通过ECB将响应的内容返回客户端。
+
+HttpRuntime  -- 第一次请求时触发 Gloable.asax MVCAppliation.Application_Start() 注册路由规则，路由规则里面已经填充了MvcRouteHandler
+-- PR方法 HttpWorkRequest对象封装成HttpContext（HttpRequest、HttpResponse）
+--	  HttpApplication栈中POP
+--	  HttpApplicationFactory创建HttpApplication对象实例 调用HttpApplication的InitInternal()方法
+
+将请求交给具体的HttpApplication（先去查一下HttpApplication栈中有没有现有的对象，如果有直接POP出一个对象实例，如果没有则通过HttpApplicationFactory创建一个实例）
+
+
+在Application对象初始化方法内部，会读一下配置文件把所有的HttpModule都初始化一下，然后循环调用HttpModule的Init方法，在Init方法内部会去注册相应的管道内部的事件，然后就可以过滤所有的请求了。
+
+机器配置文件
+UrlRoutingModule在机器的默认WebConfig中做了配置，并在第7个事件注册了application.PostResolveRequestCache+=new EventHandler(this.OnApplicationPostResolveRequestCache);
+内部根据请求的路由数据，将请求重定向到路由数据中的RouteHandler返回的具体的Handler来处理此请求。
+
+HttpApplication对象处理请求管道
+第7个事件：根据HttpContext，也就是请求的URL地址，以及路由规则，生成路由数据对象。由于路由规则注册时，已经将MvcRouteHandler交给了路由规则。
+所有当前请求的IRouteHandler的实例是MvcRouteHandler，然后就将当前请求重定向到了MvcRouteHandler返回的实例：MvcHandler上了。
+
+第11个事件：调用具体的Handler执行。在WebForm下就是Page的PR方法。在AspNet MVC下就是MvcHandler的PR方法。
+
+
+
+MvcApplication -- Application_Start() (application启动时 注册路由，为每个路由的IRouteHandler属性赋值：MvcRouteHandler)
+InitInterial();  //启动后调用 初始化方法，注册httpmodule 调用urlroutingmodule
+InitModulesCommon();
+private void InitModulesCommon()
+{
+    int count=this._moduleCollection.Count;
+    for(int i=0;i<count;i++)
+    {
+       this._currentModuleCollectionKey=this._moduleCollection.GetKeys;
+       this._moduleCollection[i].Init(this); //UrlRoutingModule 执行init
+    }
+}
+
+Route MapRoute()
+//MapRoute方法内部源码
+Route route = new Route(url,new MvcRouteHandler())
+{
+	Defaults=new RouteValueDictionary(defaults),
+	Constraints=new RouteValueDictionary(constraints),
+	DataTokens=new RouteValueDictionary()
+};
+
+//Route的构造函数
+public Route(string url,IRouteHandler routeHandler)
+{
+	this.Url=url;
+	this.RouteHandler=routeHandler;	
+}
+
+
+
+UrlRoutingModule -- Init(application)
+application.PostResolveRequestCache+= //注册事件 new EventHandler(this.OnApplicationPostResolveRequestCache);
+
+//获取路由信息
+RouteData routeData=this.RouteCollection.GetRouteData(context);
+IRouteHandler routeHandler=routeData.RouteHandler; //MvcRouteHandler的实例
+IHttpHandler httpHandler=routeHandler.GetHttpHandler(requestContext); //返回MvcHandler
+context.RemapHandler(httpHandler); //将当前请求映射到此httpHandler
+MvcHandler：内部创建控制器工厂，创建控制器执行Action，返回视图进行渲染，返回Response流给客户端。
+
+
+MvcRouteHandler的实例 获取要处理当前请求HttpHandler[Page:IHttpHandler]
+MvcRouteHandler - GetHttpHandler() - ChuanZhiHandler() -- pr(controler .action:string )
+
+
+
+Filter
+AOP面向切面的组件。
+MVC项目中Action在执行前或者执行后我们想做的一些特殊的操作（如：身份验证、日志、异常、行为截取等），
+而不想让MVC开发人员关心和写这部分重复的代码，那我们可以通过AOP截取实现，而在MVC项目中我们就可以直接使用它提供的Filter的特性帮我们解决，不用自己实现复杂的AOP了。
+
+MVC中默认的Filter
+Filter Type		实现接口		执行时间								Default Implementation
+Authorization filter	IAuthorizationFilter	在左右Filter和Action执行之前执行					AuthorizeAttribute
+Action filter		IActionFilter		分别在Action执行之前和之后执行						ActionFilterAttribute
+Result filter		IResultFilter		分别在Action Result执行之后和之前					ResultFilterAttribute
+Exception filter	IExceptionFilter	只有在filter或者action method或者action result抛出一个异常时候执行	HandleErrorAttribute
+
+
+
+-----------------------------Mvc End------------------------------
+
+WebForms Vs MVC
+WebForm优点
+1、支持事件模型开发。得益于丰富的服务器端组件，webform开发可以迅速的搭建web应用。
+2、使用方便，入门容易。
+3、控件丰富。
+WebForm缺点
+1、封装太强，很多底层东西让我们初学者不是很明白。
+2、入门容易，提升很难。
+3、复杂的生命周期模型学习起来并不容易。
+4、控制不灵活。
+5、ViewState处理。
+
+MVC优点
+1、很容易将复杂的应用分成M、V、C三个组件模型。通过model、view、controller有效的简化了复杂的架构，体现了很好的隔离原则。
+2、因为没有使用server-based forms。所以我们程序员控制的更加灵活，页面更加干净。
+3、可以控制生成自定义的url。对于seo友好的url更是不在话下。
+4、强类型View实现，更安全、更可靠、更高效。
+5、让web开发可以专注于某一层。更利于分工配合适用于大型架构开发。
+6、开源，任何组织和个人都能提交贡献。
+
+
+
+mvc是表现模式
+它将web应用程序分成三个主要组件：试图（View）控制器（Controller）模型（Model）。
+它最早由XeroxPARC在八十年代为编程语言Smalltalk-80发明的一种软件设计模式。
+M：Model 主要是存储或者是处理数据的组件。
+Model其实是实现业务逻辑层对实体类相应数据的操作。如CRUD 包括数据、验证规则、数据访问和业务逻辑等应用程序信息。
+V：View是用户接口层组件。主要是将Model中的数据展示给用户。ASPX和ASCX文件被用来处理试图的职责。
+C：Controller处理用户交互，从model中获取数据并将数据传给指定的view。
+
+控制器：负责转发请求，对请求进行处理。
+试图：界面设计人员进行图形界面设计。
+模型：业务逻辑、数据、验证规则、数据访问等。
+
+MVC模式强制性的使应用程序的输入、处理和输出分开。
+M和V的实现代码分离，从而使同一个程序可以使用不同的表现形式。如一批统计数据你可以分别用柱状图、饼状图来表示。C存在的目的则是确保M和V的同步，一旦M改变，V应该同步更新。
+控制器隔离了业务逻辑和View耦合，使得业务逻辑和数据规则等很容易改变不影响到前台页面。
+View和Controller都可以直接请求Model但是Model不依赖View和controller
+Controller可以直接请求View来显示具体页面View不依赖Controller
+
+请求处理流
+请求--IIS--AspNet Runtime--Controller--View--Response
+请求都归结到Action上，所以是Url驱动
+Action跟View是弱耦合
+View模板显示页面的规则：先找对应的Controller文件夹，再找对应的Shared文件夹。
+所有的页面继承在viewpage类
+
+ViewData传递数据载体
+ControllerBase下的一个属性
+ViewPage下的一个属性
+在ViewResult的ExcuteResult方法时，Controller中的数据传递给ViewPage类。
+
+mvc请求历程
+Request--Routing--Controller--ViewResult--ViewEngine--Response
+一个请求过来首先被view捕获，然后传递给routing，routing根据用户的请求解析调用具体的Controller的action。然后Controller返回一个viewresult给ViewEngine然后写到Response中。
+
+深入讲解Controller
+在ASP.NET MVC中，一个Controller可以包含多个Action。每一个Action都是一个方法，返回一个ActionResult实例。ActionResult类包括ExecuteResult方法，当ActionResult对象返回后会执行此方法。
+1、页面处理流程：
+发送请求--UrlRoutingModule捕获请求--MvcRouteHandler.GetHttpHandler()--MvcHandler.ProcessRequest()
+2、MvcHandler.ProcessRequest()处理流程：
+使用工厂方法获取具体的Controller--Controller.Execute()--释放Controller对象
+3、Controller.Execute()处理流程
+获取Action--调用Action方法获取返回的ActionResult--调用ActionResult.ExecuteResult()方法
+4、ActionResult.ExecuteResult()处理流程
+获取IView对象--根据IView对象中的页面路径获取Page类--调用IView.RenderView()方法（内部调用Page.RenderView方法）
+通过对MVC源代码分析，我们了解到Controller对象的职责是传递数据，获取View对象（实现了IView接口的类），通知View对象显示。
+View对象的作用是显示。虽然显示的方法RenderView()是由Controller调用的，但是Controler仅仅是一个“指挥官”的作用，具体的显示逻辑仍然在View对象中。
+需要注意IView接口与具体的ViewPage之间的联系在Controller和View之间还存在着IView对象。对于ASP.NET程序提供了WebFormView对象实现了IView接口。WebFormView负责根据虚拟目录获取具体的Page类然后调用Page.RenderView().
+
+
+
+
+三层是架构模式
+
+
+
+
+
+
+-------------------------------SQL start---------------------------
+
+数据库服务
+
+查询分析器：1、检查sql语句语法。2、将检查通过的语句交给查询优化器。
+查询优化器：1、优化查询代码。匹配已经写好的优化规则集合。2、生成查询树。
+查询执行器--缓存管理器 （访问数据库缓存） - 如果有则直接返回，没有则读取硬盘mdf文件。
+查询执行器运行sql代码
+
+
+
+主外键：
+  一、作用：
+    1、可以优化查询效率。
+    2、减少数据冗余。
+    3、维护方便（数据修改方便）。
+
+  二、两张表存在依赖数据时，就可以使用主外键来解决。
+	其中依赖列作为主键的就叫做：主键表。另一个就叫做外键表。外键表的外键列数据取自主键表的主键。
+  三、主外键约束：
+	为什么用：为了避免两张表的主外键数据出现不一致情况，需要建立主外键约束关系。
+	作用：当两张表数据修改时出现主外键数据不一致则报错，并拒绝修改。
+
+分离/附加 数据库
+脱机/联机 数据库
+
+char类型，当储存的数据小于长度时，会自动用空格来补充。
+Nchar类型，使用unicode编码，任意字符都占两个字节。
+Varchar类型，当储存的数据小于长度时，不会自动用空格来补充。 可变字符
+NVarchar类型，
+Text类型，可存储2G数据。 
+Ntext unicode
+DateTime类型，储存日期时间数据，如果要用代码类标识一个具体时间：‘2017-1-1 ’
+Money（C#：double）
+Decimal 精确指定
+Bit（bool类型：0-false，1-true）
+
+
+go关键字并不是SQL语法的规范，而是我们的MSSQLSERVER软件客户端的关键字，当客户端遇到go的时候，就会把go前面的代码先发到数据库服务去执行；
+然后再运行go下面的SQL代码语句。
+
+新增 N前缀：N'字符串'，在服务器上执行的代码中（例如在存储过程和触发器中）显示的
+Unicode字符串必须以大写字母N为前缀。即使所引用的列已定义为Unicode类型，也应如此。
+如果不使用N前缀，可能导致不识别某些字符。
+
+删除 delete 表名 -- 普通删除的时候，自增列的值不会重置
+truncate table 表名 -- 清空表里所有的行，同时重置自增列的值（重新从种子标量开始计算）
+drop table 表名 -- 删除表
+
+truncate语句非常高效。由于truncate操作采用按最小方式来记录日志，所以效率非常高。对于数百万条数据使用truncate删除只要几秒钟，而使用delete则可能耗费几小时。
+truncate语句会把表中的自动编号重置为默认值。
+truncate语句不触发delete触发器。
+
+
+手动新增标识列的值
+set IDENTITY_INSERT 表名 on -- off
+
+select top 22 percent * from 表名 -- 20%  按百分比算行数，出现小数自动+1（类似天花板函数celling）
+
+select distinct age,salary from 表名  -- 求出不重复的age和salary的组合
+
+多条件排序，当age中有相等的值，那这些行按照id升序排列。
+select * from 表名 order by age desc,id asc
+
+
+select * into newTbl from oldTbl(newTbl表在select查询时自动建立)  --  把现有表的数据复制到一个已存在的表，只能复制表中的数据，以及列的名字和数据类型。对于约束不会复制过来。
+select * into newTbl from oldTbl where 1<>1 这样可以只复制表结构，但效率不高。建议：select top 0 * into newTbl from oldTbl
+insert into backupStudent select * from students(backupStudent表必须提前建好)
+
+
+将Techer数据复制到已存在的techer3表中
+insert into Techer3（id,Name,Gender,Age） 
+select * from Techer
+
+LEN() -- 计算字符串长度，字符的个数。
+datalength() -- 计算字符串所占用的字节数，不属于字符串函数。
+LTRIM() -- 字符串左侧的空格去掉。
+RTRIM() -- 字符串右侧的空格去掉。
+LEFT()  RIGHT() 用来截取字符串
+
+SUBSTRING(string,start_position,length)，索引从1开始。
+string--主字符串。
+start_position--为子字符串在主字符串中的起始位置。
+length--为子字符串的最大长度。
+
+
+日期函数
+1、获取当前日期
+select getdate()
+2、修改日期（修改的部分-- day，month，year；增加的数值；要新增的时间）
+select DATEADD(day,2,getdate())
+select DATEADD(year,-2,getdate())
+3、求两个日期的差
+select DATEDIFF(day,'2017-01-01',GETDATE())
+select DATEDIFF(day,'2017-01-01','2017-01-29')
+--求出相差天数：select cast((getdate()-'2017-01-01') as int)
+4、获取日期的部分
+select month(GETDATE())
+select DATEPART(month,GETDATE())
+
+
+select DATEPART(year,sbirthday),count(*) from student group by datepart(year,sbirthday)
+select count(*) from p where birthday=1990
+
+
+--查询通话时间最长的5条记录
+select top 5 *,DATEDIFF(SECOND,startdatetime,enddatetime) as 时长,* from CallRecords order by 时长 desc
+
+--查询长途的通话总时长
+select sum(DATEDIFF(SECOND,startdatetime,enddatetime)) as 长途总时长 from callrecords where telnum like '0%'
+
+--查询本月通话总时长最多的前三个呼叫员的编号
+select top 3 callernumber,sum(datediff(second,startdatetime,enddatetime)) as 总时长 from callrecords 
+where year(startdatetime)=2017 and month(startdatetime) in (2,3) 
+group by callernumber 
+order by 总时长 desc 
+
+--查询本月拨打电话次数最多的前三个呼叫员的编号
+select top 3 callernumber,count(*) 次数 from callrecords 
+where year(startdatetime)=2017 and month(startdatetime) in (2,3) 
+group by callernumber
+order by count(*) desc
+
+
+
+
+
+
+
+
+
+
+触发器可递归触发
+最高达32级
+
+
+
+聚集索引：索引顺序与实际数据的物理存储顺序是一致。
+一张表中只能有一个聚集索引。
+
+非聚集索引：索引的存储顺序与实际数据的物理顺序无关。
+可以有多个。
+
+是否为唯一索引：
+当为某列建立唯一索引后这列数据就不能有重复。
+
+
+索引目录 索引页（存储索引的位置）
+填充因子：储存索引页
+
+填充因子70 留30% 留给以后添加新的索引数据
+
+-------------------------------SQL end--------------------------
+
+
+
+-----------------------------ADO.NET start-------------------------
+
+ Stopwatch watch1 = new Stopwatch();
+            watch1.Start();
+            for (int i = 0; i < 100; i++)
+            {
+                SqlConnection conn = new SqlConnection("server=.;databse=db;uid=sa;pwd=123;pooling=false");
+                conn.Open();
+                conn.Close();
+                conn.Dispose();
+            }
+            watch1.Stop();
+            Console.WriteLine("时间1："+ watch1.Elapsed.ToString());
+
+
+            Stopwatch watch2 = new Stopwatch();
+            watch2.Start();
+            for (int i = 0; i < 100; i++)
+            {
+                SqlConnection conn = new SqlConnection("server=.;databse=db;uid=sa;pwd=123;pooling=true");
+                conn.Open();
+                conn.Close();
+                conn.Dispose();
+            }
+            watch2.Stop();
+            Console.WriteLine("时间2：" + watch2.Elapsed.ToString());
+
+
+-------------------------------ADO.NET end---------------------------
+
+
+
+----------------------------------HTTP start-------------------------------
+
+浏览器：一个可以向服务器软件发送基于HTTP协议语法的各种数据请求，并对从服务器软件发来的信息和各种多媒体数据格式进行解释、显示和播放的程序。
+服务器：一个管理资源并为浏览器提供服务的计算机软件。
+交互时使用HTTP协议
+
+
+GET POST
+可以设定<form>的method属性指定表单提交方式，get（默认值）是通过URL传递表单值，post传递的表单值是隐藏到http报文体中，url中看不到。
+get和post区别：get通过url传递表单值，post通过表单域的值；
+get数据量有限，如果要传递大数据量不能用get，如：type="file"上传文件、type="password"传递密码或者<textarea>发表大段文章，post则没有这个限制；
+post会有浏览器提示重新提交表单的问题，get则没有。对于post的表单重新敲地址栏再刷新就不会提示重新提交了，因为重新敲地址就没有偷偷提交的数据了。post方式的正确的地址很难直接发给别人。
+
+get方式url数据格式。服务端文件名后面跟“？”，由于客户端可能向服务器端提交多个键值对，键值对之间用“&”进行分割，如果url中有汉子、特殊符号等，则需要对url进行编码。
+表单域只有设定了name的才会被提交给服务器（用get方式看的更清楚）。如果给submit按钮设定name，那么按钮的value也会被提交给服务器。
+
+post contentType
+request.ContentType = "application/x-www-form-urlencoded";//设置传值的编码格式
+
+
+<input type="file" name="t">控件
+表单设置enctype="multipart/form-data" ，本质上就是设置浏览器提交表单的数据时，使用随机分隔符来分割不同控件的数据，而且数据的组织形式由name=value换成了数据头和数据体的方式。
+
+服务端接收客户端上传的文件使用Request.Files属性。
+使用HttpPostedFile的SaveAs方法将图片保存在服务器。
+
+设置enctype后，请求报文头中多出一个：boundary属性（分界符）
+		请求报文体的数据格式发生改变：
+		由name=value的方式编程 分隔符分段方式。
+		被选中要上传的数据就包含在请求报文体中。
+
+
+
+ProcessRequest(HttpContext context)
+{	
+HttpFileCollection files=context.Request.Files;
+for(int i=0;i<files.Count;i++)
+{
+HttpPostedFile file=files[i];
+if(file.ContentLength>0)
+{
+//浏览器的不同可能获得的是上传文件的路径（ie6），所以为了兼容，必须获得文件名。
+//string strFileName=System.IO.Path.GetFileName(file.FileName);
+string strFileName=new Guid.NewGuid().ToString()+System.IO.Path.GetExtension(file.FileName);
+file.SaveAs(context.Server.MapPath("uploadfiles/"+strFileName));
+}
+}
+
+}
+
+
+----服务器通过ashx动态输出图片---HttpResponse HtmlTextWriter 
+
+HTML
+<body>
+<img src="WaterMake.ashx">
+</body>
+
+WaterMake.ashx
+Using System.Drawing;
+
+public class WaterMake:IHttpHandler{
+public void PorcessRequest(HttpContext context)
+{
+context.Response.ContentType="image/jpeg";
+using(Image img=new Bitmap(120,60))
+{
+//将图片保存到二进制的输出流里 Response.OutputStream
+img.Save(context.Response.OutputStream,System.Drawing.Imaging.ImageFormat.Jpeg);
+
+//context.Response.Write(img);
+}
+
+}
+
+
+}
+
+
+
+WaterMake.ashx
+public class WaterMake:IHttpHandler{
+public void PorcessRequest(HttpContext context)
+{
+context.Response.ContentType="image/jpeg";
+string strName=context.Request.QueryString["name"];
+using(Image img=new Bitmap(120,60))
+{
+using(Graphics g=Graphics.FromImage(img))
+{
+//画在img的那个地方，(10,10)原点开始画
+g.DrawString(strName,new Font("微软雅黑",16),Burshes.Red,10,10);
+//将图片保存到二进制的输出流里 Response.OutputStream
+img.Save(context.Response.OutputStream,System.Drawing.Imaging.ImageFormat.Jpeg);
+
+}
+
+
+//context.Response.Write(img);
+}
+
+}
+
+
+}
+
+
+
+------水印图
+public class water:IHttpHandler{
+public void PorcessRequest(HttpContext context)
+{
+context.Response.ContentType="image/jpeg";
+string strName=context.Request.QueryString["name"];
+string strPath=context.Server.MapPath("uploadfiles/"+strName);
+
+using(Image imgOrg=new Bitmap.FromFile(strPath))
+{
+using(Image imgWater=new Bitmap.FromFile(context.Server.MapPath("uploadfiles/logo.gif")))
+{
+using(Graphics g=Graphics.FromImage(imgOrg)))
+{
+//第一个 Rectangle 在原图上取 原点开始 宽 高	第二个 Rectangle 原点开始 图片的大小
+//将imgWater画到imgOrg上，长方形（要将水印图画成多大，然后画在原图的哪个原点位置），第二个长方形（要从水印图中取哪个区域画到原图上，原点，宽高），单位=像素
+g.DrawImage(imgWater,new Rectangle(0,0,imgWater.Width,imgWater.Height),new Rectange(0,0,imgWater.Width,imgWater.Height),GraphicsUnit.Pixel);
+imgOrg.Save(context.Response.OutputStream,System.Drawing.Imaging.ImageFormat.Jpeg);
+}
+
+}
+}
+
+
+}
+
+
+------上传保存前添加水印
+ProcessRequest(HttpContext context)
+{	
+HttpFileCollection files=context.Request.Files;
+for(int i=0;i<files.Count;i++)
+{
+HttpPostedFile file=files[i];
+if(file.ContentLength>0)
+{
+//判断文件是否是图片
+if(file.ContentType.StartsWith("image"))
+{
+using(Image img=Image.FromStream(file.InputStream))
+{
+using(Image imgWater=Image.FromFile(context.Server.MapPath("uploadfiles/logo.gif")))
+{
+using(Graphics g=Graphics.FromImage(img))
+{
+int x=img.Width-imgWater.Width;
+int y=img.Height-imgWater.Height;
+g.DrawImage(imgWater,new Rectangle(x,y,imgWater.Width,imgWater.Height),new Rectangle(0,0,imgWater.Width,imgWater.Height),GraphicsUnit.Pixel);
+string strFileName=System.Guid.NewGuid().ToString()+System.IO.Path.GetExtension(file.FileName);
+img.Save(context.Server.MapPath("uploadfiles/"+strFileName));
+}
+}
+}
+}
+
+}
+}
+
+}
+
+
+------上传保存等比例缩略图
+ProcessRequest(HttpContext context)
+{	
+HttpFileCollection files=context.Request.Files;
+for(int i=0;i<files.Count;i++)
+{
+HttpPostedFile file=files[i];
+if(file.ContentLength>0)
+{
+string strFileName=System.Guid.NewGuid().ToString()+System.IO.Path.GetExtension(file.FileName);
+
+//保存原图
+
+//将文件保存在物理路径上
+file.SaveAs(context.Server.MapPath("uploadfiles/"+strFileName));
+
+
+//判断文件是否是图片
+if(file.ContentType.StartsWith("image"))
+{
+using(Image img=Image.FromStream(file.InputStream))
+{
+int imgW=img.Width;
+int imgH=img.Height;
+int thumbW=120;//220;
+//int thumbH=100;
+//thumbW=thumbH*imgW/imgH;
+//根据原图的高宽比，算出缩略图的高（保证缩略图不变形）
+thumbH=thumbW*imgH/imgW;
+
+
+//生成缩略图，并保存
+using(Image imgThumb=new Bitmap(thumbW,thumbH))
+{
+using(Graphics g=Graphics.FromImage(imgThumb))
+{
+g.CompositingQuality=System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+g.InterpolationMode=System.Drawing.Drawing2D.InterpoationMode.HighQualityBicubic;
+g.SmoothingMode=System.Drawing.Drawing2D.SmoothingMde.HighQuality;
+//g.Clear(Color.Transparent);
+g.Clear(Color.Black);
+//将大图画到小图上
+g.DrawImage(img,new Rectangle(0,0,imgThumb.Width,imgThumb.Height),new Rectangle(0,0,imgThumb.Width,imgThumb.Height),GraphicsUnit.Pixel);
+imgThumb.Save(context.Server.MapPath("uploadfiles/"+"thumb_"+strFileName));
+}
+
+}
+
+}
+
+}
+context.Response.Write("ok");
+
+}
+}
+
+}
+
+
+------动态生成验证码
+
+Random r=new Random();
+ProcessRequest(HttpContext context)
+{
+context.Response.ContentType="image/jpeg";
+//1、随机生成6位数
+string strCode=GetRandomNumStr(6);
+//2、创建图片对象
+using(Image img=new Bitmap(220,80))
+{
+
+using(Graphics g=Graphics.FromImage(img))
+{
+//3、绘制图片背景
+g.FillRectangle(Brushes.White,0,0,img.Width,img.Height);
+g.DrawRectangle(Pens.Gray,0,0,img.Width-1,img.Height-1);
+//4、绘制50个噪音点
+DrawPoints(g);
+//5、绘制20条噪音线
+DrawLines(g);
+//6、将随机数画到图片上
+System.Drawing.Drawing2D.LinearGradientBrush brush=new LinearGradientBrush(
+new Rectangle(0,0,img.Width,img.Height),Color.Blue,Color.DarkRed,1.2f,true
+);
+
+g.DrawString(strCode,new Font("微软雅黑",18,(System.Drawing.FontStyle.Bold|System.Drawing.FontStyle.Italic)),brush,10,10);
+
+//7、将图片输出到浏览器
+img.Save(context.Response.OutputStream,System.Drawing.Imaging.ImageFormat.Jpeg);
+
+}
+
+}
+
+
+}
+
+//画噪音点
+void DrawPoints(Graphics g)
+{
+Pen[] colors={
+Pens.Red,
+Pens.Blue,
+Pens.Yellow,
+Pens.Tomato,
+Pens.Green
+};
+
+//Color[] colors={Color.Red,Color.Blue,Color.Yellow,Color.Tomato,Color.Green};
+for(int i=0;i<50;i++)
+{
+int x=r.Next(1,140);
+int y=r.Next(1,50);
+int z=r.Next(1,5);
+
+int x2=x+z;
+int y2=y+z;
+
+g.DrawLine(colors[r.Next(0,5)],x,y,x2,y2);
+
+}
+}
+
+
+//画噪音线
+void DrawLines(Graphics g)
+{
+Pen[] colors={
+Pens.Red,
+Pens.Blue,
+Pens.Yellow,
+Pens.Tomato,
+Pens.Green
+};
+
+for(int i=0;i<20;i++)
+{
+int x=r.Next(1,140);
+int y=r.Next(1,50);
+int z=r.Next(0,5);
+int z2=r.Next(0,5);
+int x2=x+z;
+int y2=y+z2;
+
+g.DrawLine(colors[r.Next(0,5)],x,y,x2,y2);
+
+}
+}
+
+
+string GetRandomNumStr(int length)
+{
+length=length>0?length:6;
+System.Text.StringBuilder sb=new StringBuilder();
+
+for(int i=0;i<length;i++)
+{
+sb.Append(r.Next(0,10).ToString());//生成0-9的随机数
+}
+return sb.ToString();
+}
+
+
+
+---------向浏览器输出图片s
+
+
+  string pathimg = AppDomain.CurrentDomain.BaseDirectory + "images\\20170424081926.png";
+
+        #region 1、已存在图片 WriteFile
+
+        //Response.ContentType = "image/png";
+        //Response.WriteFile(pathimg); 
+        
+        #endregion
+
+        #region 2、已存在图片转成字节输出
+
+        //using (FileStream fs=new FileStream(pathimg, FileMode.Open))
+        //{
+        //    long le=fs.Length;
+        //    byte[] arrImgNew = new byte[le];
+        //    fs.Read(arrImgNew, 0, arrImgNew.Length);
+        //    Response.ContentType = "image/Jpeg";
+        //    HttpContext.Current.Response.BinaryWrite(arrImgNew);
+        //}
+
+        #endregion
+
+        #region 3、创建图片save到内存流输出
+
+        string checkCode = "heihei";
+        int iwidth = checkCode.Length * 24;
+        Bitmap image = new Bitmap(iwidth,50);
+        Graphics g = Graphics.FromImage(image);
+        g.Clear(Color.White);
+
+        //定义颜色
+        Color[] colors = { Color.Pink, Color.HotPink, Color.Green, Color.GreenYellow, Color.Black, Color.Red, Color.DarkBlue, Color.Orange, Color.Brown, Color.DarkCyan, Color.Purple };
+        //定义字体
+        string[] fonts = { "Verdana", "Microsoft Sans Serif", "Comic Sans MS", "Arial", "宋体", "Microsoft yahei" };
+
+        //随机输出噪点
+        Random ran = new Random();
+        for (int i = 0; i < 999; i++)
+        {
+            int x = ran.Next(image.Width);
+            int y = ran.Next(image.Height);
+            g.DrawRectangle(new Pen(Color.LightGray, 1), x, y, 1, 1);
+        }
+
+        //输出不同字体和颜色的验证码字符
+        for (int i = 0; i < checkCode.Length; i++)
+        {
+            int cindex = ran.Next(10);
+            int findex = ran.Next(5);
+
+            Font f = new Font(fonts[findex], 28, FontStyle.Bold);
+            Brush b = new SolidBrush(colors[cindex]);
+            
+            g.DrawString(checkCode.Substring(i, 1), f, b,(i * 20)+8,1);
+        }
+        //g.DrawRectangle(new Pen(Color.Black, 1), 0, 0, image.Width - 1, image.Height - 1);
+        
+        //输出到浏览器
+        MemoryStream ms = new MemoryStream();
+        image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+        Response.ClearContent();
+        Response.ContentType = "image/Jpeg";
+        Response.BinaryWrite(ms.ToArray());
+        g.Dispose();
+        image.Dispose();
+
+        #endregion
+
+
+---------向浏览器输出图片e
+
+
+
+
+--------js切换验证码显示
+<script type="text/javascript">
+function changeNum(img){
+//alert(img);
+img.src="ValidateCode.ashx?id="+new Date();
+}
+</script>
+
+<img src="ValidateCode.ashx" onclick="changeNum(this)" alt="点击更换">
+
+
+--------文件下载
+
+<a href="uploadfiles/1.txt"></a>
+
+HttpHandler是对请求的响应，可以输出普通的html内容，也可以输出图片、也可以输出一个文件（下载）
+
+HttpHandler输出的是html/txt/jpeg等类型的信息，那么浏览器会直接显示，如果希望弹出保存对话框，则需要添加Header
+string encodeFileName=HttpUtility.UrlEncode("ss.avi");
+Response.AddHeader("Content-Disposition",string.Format("attachment;filename=\"{0}\"",encodeFileName));
+filename后为编码后的文件名。filename段为建议的保存文件名。
+
+但是不安全
+
+string strFileName=HttpUtility.UrlEncode("fName");
+if(!string.IsNullOrEmpty(strFileName))
+{
+string encodeFileName=HttpUtility.UrlEncode(strFileName);
+//添加Content-Disposition，告诉浏览器使用另存为的方式下载文件。
+context.Response.AddHeader("Content-Disposition",string.Format("attachment;filename=\"{0}\"",encodeFileName));
+string strFilePath=context.Server.MapPath("uploadfiles/"+strFileName);
+context.Response.WriteFile(strFilePath);
+}
+else
+{
+context.Response.Write("参数有误！");
+}
+
+
+ASP.NET运行机制：浏览器--服务器电脑--IIS--IIS扩展程序（aspnet_isapi.dll）--FrameWork--HttpRuntime--HttpContext--HttpApplicationFactory--HttpApplication--请求管道（事件委托19个）--IHttpHandler（在11-12事件中间执行了被请求的处理程序（aspx,ashx））的处理流程。
+
+
+
+UrlReferrer
+当前请求的上一个页面
+Request.UrlReferrer
+
+GET /web/index.aspx?id=1 HTTP/1.1
+Accept:image/gif
+Referer:http://localhost:22436/web/Add.aspx
+
+
+if(!Request.UrlReferrer.StartWidth("http://www.qq.com")
+{
+//查出是盗链
+}
+else
+{
+//不是盗链，则直接输出图片
+}
+
+//socketConnection.RemoveEndPoint.Address
+Request.UserHostAddress --获取客户端（访问者）ip地址
+
+Request.MapPath(virtulPath) 将虚拟路径转换为磁盘上的物理路径
+Request.MapPath("./a/b.aspx")会得到 D:\VS\WebSite\a\b.aspx
+Server.MapPath 里就是调用的 Request.MapPath
+
+
+响应的缓冲输出：为了提高服务器的性能，ASP.Net向浏览器Write的时候默认并不会每Write一次都立即输出到浏览器，而是会缓存数据到合适的时机或者响应结束才会将缓冲区的数据一起发送到浏览器。
+Response的主要成员：
+------Response.Buffer------
+Response.Buffer
+Response.BufferOutput
+Buffer内部就是调用的BufferOutput，这个属性用来控制是否采用响应缓存，默认是true。
+
+//关闭输入对象的内容缓存（只要调用write就立即输出到浏览器）
+Response.Buffer=false;
+for(int i=0;i<5;i++)
+{
+System.Threading.Thread.Sleep(500);
+Response.Write("i="+i+"<br/>");
+}
+
+------Response.Flush()------
+Response.Flush() 将缓冲区中的数据发送给浏览器。这在需要将write出来的内容立即输出到浏览器的场合非常实用。
+例如大批量数据的导入，显示正在导入第几天数据，用Thread.Sleep模拟耗时。
+
+for(int i=0;i<5;i++)
+{
+System.Threading.Thread.Sleep(500);
+Response.Write("i="+i+"<br/>");
+if(i==3)
+Response.Flush();//立即输出Response中的内容缓存
+}
+
+------Response.Clear()------
+Response.Clear() 清空缓冲区中的数据，这样在缓冲区中的没有发送到浏览器端的数据被清空，不会被发送到浏览器。
+
+for(int i=0;i<5;i++)
+{
+System.Threading.Thread.Sleep(500);
+Response.Write("i="+i+"<br/>");
+if(i==3)
+Response.Clear();
+}
+//输出结果 3 4
+
+------Response.ContentEncoding------
+Response.ContentEncoding 输出流的编码。
+
+Response.Charset="gb2312";//告诉浏览器用什么字符集解码
+Response.ContentEncoding=System.Text.Encoding.GetEncoding("gb2312");//System.Text.Encoding.UTF8;//指定报文体的编码方式
+Response.Write("阿萨dddd");
+
+------Response.ContentType------
+Response.ContentType 输出流的内容类型。如：html(text/html  text/plain  image/JPEG)
+
+------Response.OutputStream End------
+Response.OutputStream 输出流，在输出图片、Excel文件等非文本内容时使用。
+Response.End() 终止响应，将之前缓存中的数据发给浏览器，End()之后的代码不会继续执行，End方法里调用了Flush()方法。在终止一些非法请求的时候，比如盗链等可以用End()立即终止请求。
+
+无状态Http
+一个浏览者发出的请求都是由实现了IHttpHandler接口的对象进行响应，由于下次访问不一定还是上次那个对象进行响应，上次响应完毕对象可能已经被销毁了，写的类变量值早就不存在了，因此不要将状态信息保存到类变量中。
+
+无状态根本原因是：浏览器和服务器使用Socket通信，服务器将请求结果返回给浏览器后，会关闭当前Socket连接。而且服务器会在处理页面完毕后销毁页面对象。
+
+应用层面的原因是：浏览器和服务器之间通信都遵守HTTP协议。
+
+Http协议是无状态的，不会记得上次和网页“发生了什么”。
+对网站造成的影响：如果用户录入了一些信息，当跳转到下一个页面时，数据丢失，再也不能获得那些数据。
+如果要知道上一次的状态信息，我们就得把这个状态信息记录在某个地方：
+a、服务器端
+b、浏览器端
+c、表单元素中--隐藏域 <input type="hidden"/>（Http报文）
+
+
+客户端：ViewState、HiddenField、Cookies、ControlState、QueryString
+服务端：Session、ApplicationObject、Caching、Database
+
+
+
+
+HttpContext的重要属性：
+Response（负责向客户端输出）
+Request（包含所有客户端提交的数据）
+Application、Cookies、Session
+
+
+Server.Transfer(path)内部重定向请求。浏览器地址不会变化，重定向到的页面可以访问到Request、Cookies等来源页面的参数。
+Redirect则不行，因为是让浏览器去访问。（不能内部重定向到ashx，否则会报错“执行子请求出错”）
+Transfer是内部接管，因此不能重定向到外部网站，Response.Redirect就可以重定向到外部网站。
+
+
+application存活于内存，服务器重启就没有了。网站重启（IIS），就没有了。
+session 用户请求时间加上一段时间（一般20分钟左右）
+cookie 如果没有设置失效日期，它们仅保存到关闭浏览器。
+viewstate 保存单个用户的状态信息，有效期等于页面的生存周期。
+cache 用于在http请求间保存页面或数据，其生命周期依赖于应用程序的生存期。当重新启动应用程序时，将重新创建其cache对象的实例。
+
+
+
+
+状态保持：
+客户端本质上3种：隐藏域/Cookies/QueryString（url?name=1）
+常用的状态（信息）保持方式（重点）
+ViewState:
+Asp.net的.aspx页面特有，页面级的：
+就是在页面上的一个隐藏域中保存客户端单独使用的数据的一种方式；
+服务端控件的值都自动保存在ViewState中；
+Cookie：
+Http协议下的一种方式，通过该方式，服务器或脚本能够在客户机上维护状态信息；
+就是在客户端保存客户端单独使用的数据的一种方式；
+就像你的病历本一样，医院直接给你带回家；
+Session：现在指的是进程内Session。
+在服务器端保存客户端单独使用的数据的一种方式；
+就像银行账户，钱都存在银行里，你就拿一张银行卡（sessionid）回家；
+Application：
+在服务器端保存共享数据的一种方式；
+就像银行的单人公共卫生间，谁进去都行，但一次去一个，进去了就锁上门，出来再把锁打开；
+
+-------------ViewState
+两种使用方式：作用域--页面级
+1、用户数据保存方式：
+ViewState["myKey"]="MyData";
+读取数据方式；
+string data=(string)ViewState["myKey"];
+2、非单值服务器控件的状态也自动保存在ViewState中
+列入：下拉框。（文本框是单值控件，所以不会保存在ViewState中）
+
+使用ViewState前提：<form runat="server">
+
+服务器在接收到用户请求一个页面后，会自动在请求报文中找看是否包含_VIEWSTATE的隐藏域，如果有，则将中间的值解码后添加到页面的ViewState属性中。
+服务器在输出的时候，也会自动将ViewState中的值经过Base64编码后，自动添加到表单里名叫_VIEWSTATE的隐藏域中
+VIEWSTATE适用于同一个页面在不关闭的情况下多次与服务器交互
+
+禁用单个控件的ViewState设定enableviewstate=false 禁用后textbox版本不受影响，div版本受影响，因为input的value不依靠viewstate
+禁用整个页面的，在aspx的page指令区加上EnableViewState="false"。
+当某些控件的某些属性不属于浏览器表单的提交范围时，fw将会把这些属性添加到viewstate中保存。
+webform的IsPostBack依赖于_ViewState
+
+IsPostBack如果是提交表单post过来则为true
+其实是根据提交的请求报文中（而不是请求报文体中。因为可以通过在url后加参数__VIEWSTATE）是否包含名为 __VIEWSTATE 的数据来判断
+
+去掉控件runat=server
+url?__VIEWSTATE
+请求
+IsPostBack也会为true
+
+
+//在执行Page_Load之前，其实页面生命周期还会帮我们执行一个LoadState方法，在此总会将浏览器传来的隐藏域的值反base64反序列化成对象，再存入当前页面的ViewState属性中。
+//所以执行到Page_Load时，程序员就可以访问到ViewState里的值了。
+
+
+
+
+
+
+-------------Cookie--病历本
+一种能够让网站服务器把少量数据（4kb左右）储存到客户端的硬盘或内存，并且读取出来的一种技术。
+
+当你浏览某网站时，由Web服务器放置于你硬盘上的一个非常小的文本文件，它可以记录你的用户ID、浏览过的网页或者停留的时间等网站想要你保存的信息。当你再次通过浏览器访问该网站时，浏览器会自动将属于该网站的Cookie发送到服务器去，服务器通过读取Cookie，得知你的相关信息，就可以做出相应的动作。如在页面显示欢迎你的标语，或者让你不用输入ID、密码就直接登录等等。
+浏览器访问一个站点时，只将属于当前站点的Cookie发过到服务器。(根据域名)—(没必要把每家医院的病历本都带过去。)
+Cookie不兼容浏览器！（不同浏览器不共享Cookie文件数据）
+最好是将要保存的内容在服务器端加密,然后再写入cookie，为什么？
+在硬盘中存放的位置与使用的操作系统和浏览器密切相关。
+浏览器保存Cookie有两种方式：
+1—浏览器的内存中；
+2—浏览器所在的电脑的硬盘中。为将要写入到浏览器的Cookie对象设置失效时间：Cookie.Expires = DateTime.Now.AddMinutes(5);//设置cook5分钟后失效
+	开发场景：常用于登录和保存用户最近浏览商品
+	从浏览器发来的Cookie的Expires属性值是无效的.(浏览器在向服务器发送Cookie的时候，没有将Cookie的失效时间发送过去)
+
+服务器设置Cookie：
+ HttpCookie cok = new HttpCookie(“uId”, “10001”);//(“键”,”值”)
+ cok.Expires = DateTime.Now.AddDays(18);//设置失效日期-现在之后的18天后
+ context.Response.Cookies.Add(cok); //添加到响应中
+
+服务器获得客户端传来的Cookie：
+ string strUName=context.Request.Cookies[“uId”].Value;//从请求中获得Cookie
+
+
+1、普通get请求无Cookie
+GET/index.html HTTP/1.0 Host:www.joes-hardware.com
+
+2、服务器通过响应报文头里的set-cookie向浏览器设置Cookie信息
+Http/1.0 200 OK
+Set-Cookie:id="34295"; domain="joes-hardware.com"
+Content-type:text/html
+Content-length:1903
+
+3、浏览器通过请求报文头里的Cookie传递浏览器存储的Cookie信息
+Get/index.html HTTP/1.0
+Host:www.joes-hardware.com
+Cookie:id="34295"
+
+cookie.Path(为指定的文件夹生成Cookie)-- 设置path="/test/admin/" 只有当访问到/test/admin/路径下的页面时才会发送cookie到服务器
+cookie.Domain (域/域名) www.oumind.com book.oumind.com
+Response.Cookies和Request.Cookies中间的关系 – 有共用部分
+
+注意：当设置了cookie的Path后，浏览器在访问这个域名下的页面时，会先判断一下，该页面是否在指定的路径下。如果和cookie的path相同，会将这个cookie发到服务器；
+如果访问的页面路径和cookie的path不同，则不会发送这个cookie到服务器。
+
+
+
+如果服务器两次都输出同一个名称的cookie，浏览器会用第二个覆盖第一个。
+如果服务器输出两个不同名的cookie 两个都写在同一个文件
+删除cookie
+context.Request.Cooies["id"].Expires=DateTime.Now.AddSecond(-1);
+//删除服务器Cookie
+//先创建一个同名的cookie
+HttpCookie cookie=new HttpCookie("id","");
+//设置失效
+cookie.Expires.AddDays(-1);
+//发到浏览器覆盖掉浏览器端的未失效的cookie
+context.Response.Cookies.Add(cookie);
+
+
+注意：
+表单是和页面相关的，只有浏览器端提交了这些数据，服务器端才能得到。而有时候希望在服务端任意的地方存取一些和访问者相关的信息，这时候就不方便将这些信息保存到表单中了，因为如果那样的话必须随时注意在所有页面表单中都保存这些信息。Cookie是和站点相关的，并且每次向服务器请求的时候除了发送表单参数外，还会将和站点相关的所有Cookie都提交给服务器，是强制性的。Cookie也是保存在浏览器端的，而且浏览器会在每次请求的时候都会把和这个站点的相关的Cookie提交到服务器，并且将服务端返回的Cookie更新到硬盘，因此可以将信息保存在Cookie中，然后在服务器端读取、修改。服务器返回数据除了普通的html数据以外，还会返回修改的Cookie，浏览器把拿到的Cookie值更新本地浏览器的Cookie就可以。
+哪怕请求jpg、js、css这种文件也会带着Cookie，因为服务器端可能要进行Session的操作，比如判断是否登录。互联网优化的案例：图片服务器和主站域名不一样，降低Cookie流量的传输。面试时聊网站调优
+Cookie的缺点和表单一样，而且还不能存储过多信息。客户端、服务器端设置的Cookie双方都能读。
+
+
+
+Session["Id"]="";
+
+Response.Cookies["Id"].Value="";//设置在浏览器的缓存中 没有设置时间
+
+//创建cookie对象（键值）
+HttpCookie cookie=new HttpCookie("Id","");
+//设置了失效时间，浏览器会创建cookie文本保存到硬盘
+cookie.Expires=DateTime.Now.AddMinutes(2);
+Response.Cookies.Add(cookie);
+
+
+
+-------------Session(浏览器访问到页面需要保存值到session时创建)
+Session提供了一种把信息保存在服务器内存中的一种方式。它能存储任何数据类型包括自定义对象。
+每个客户端的Session是独立存储。 
+Session 对象用于存储有关用户的信息。
+在整个用户会话过程中(浏览器关闭之前)都会保留此信息。（保存SessionId的cookie丢失之前）
+当用户在应用程序中从一个网页浏览到另一个网页时，存储在 Session 对象中的变量不会被丢弃。
+Session只可由该会话的用户访问(因为SessionId的东东以cookie的方式保存访问者浏览器的缓存里了)
+用户不能访问或修改他人的Session
+
+注意：当会话(Session)过期或终止时，服务器就会清除 Session 对象
+开发场景：常用于保存登录用户ID
+
+SessionID	唯一用户会话标识符
+TimeOut		用户超时（单位：分钟），默认20分钟
+Count		会话状态集合中的项目数
+
+Abandon方法	用于显示结束会话
+
+Session.Clear()	清空服务端的Session对象里的键值对，Session对象并没有从Session池里销毁。
+
+
+开始并为Session赋值：
+	Session[“uName”]=“CNYaoMing”;
+
+取值：
+	string strName = Session[“uName”].ToString();
+
+销毁(取消/退出)：
+	Session.Abandon();//Abandon用于显示结束会话。销毁服务器端的Session对象 Session.Clear();//清空服务端的Session对象里的键值对，Session对象并没有从Session池里销毁
+
+Session详解（20分钟没被访问自动销毁）
+ASP.Net已经内置了Session机制。不要放太多的对象到Session(因为存储在服务器端fw的一个辅助进程里,不稳定，数据多了容易丢失。)，Session会有超时销毁的机制。
+Cookie是存在客户端，Session是存在服务器端，目的是一样的：保存和当前客户端相关的数据（当前网站的任何一个页面都能取到Session、Cookie）。
+如果浏览器禁用了Cookie可以启用Url来传递SessionID。
+
+可以看到Session机制并不是Http协议规定的，是ASP.net实现的，现在PHP、JSP等大部分服务端技术都实现了Session，原理都差不多。
+Session有自动销毁机制（设置失效时间，默认就是滑动过期机制），如果一段时间内浏览器没有和服务器发生任何的交互，则Session会定时销毁。
+
+
+如果一般处理程序要使用session，必须实现IRequiresSessionState接口，session才有值。
+
+session退出要实现接口
+IRequiresSessionState //没有任何成员的接口叫标识接口
+
+public Class LoginOut:IHttpHandler,IRequiresSessionState
+{
+public void ProcessRequest(HttpContext context)
+{
+//在服务器端销毁当前登录用户的Session对象
+context.Session.Abandon();
+context.Response.Write("<script>alert('推出成功！');window.localtion='Login.aspx';</script>");
+}
+
+}
+
+
+浏览器禁用cookie后sessionid可以通过url传递给浏览器
+
+配置文件
+<system.web>
+<sessionState timeout="40" cookieless="AutoDetect"></sessionState>
+
+</system.web>
+
+
+
+
+Session有什么重大BUG，微软提出了什么方法加以解决？（常考）
+iis中由于有进程回收机制，系统繁忙的话Session会丢失，IIS重启也会造成Session丢失。这样用户就要重新登录或者重新添加购物车、验证码等放到Session中的信息。可以用State  server或SQL Server数据库的方式存储Session不过这种方式比较慢，而且无法捕获Session的END事件。但是（一定要写上，这样才够拽）我认为这不是Bug，只能说是In-Proc方式存储Session的缺陷，缺陷是和Bug不一样的，In-Proc方式存储Session会由服务器来决定什么时候释放Session，这是By Design，In-Proc方式不满足要求的话完全可以用StateServer和数据库的方式。
+
+StateServer还可以解决集群Session共享的问题。
+
+配置StateServer的方法：
+http://support.microsoft.com/kb/317604
+http://blog.csdn.net/zj1103/archive/2008/09/14/2926773.aspx
+
+
+
+
+
+
+
+
+
+
+-------------Application对象（网站部署上去，第一个用户访问的时候创建）
+可以存储应用程序级的数据。
+第一个用户访问站点时，应用程序启动，并创建一个Application对象。
+创建成功后，整个应用程序中都可以使用该对象。
+除非应用程序关闭，否则对象一直存储在内存中。
+
+
+系统对象
+Request		读取客户端在web请求期间发送的值
+Response	封装了页面执行期返回到HTTP客户端的输出
+Application	作用于整个程序运行期的状态对象（保存网站共享数据）
+Session		会话期状态保持对象，用于跟踪单一用户的会话（安全）
+Cookie		客户端保持会话信息的一种方式（相对类说对安全要求不高的时候使用）
+Server		提供对服务器上的方法和属性的访问
+
+
+Application.Lock();//加锁
+if(Application["count"]!=null)
+{
+int num=Convert.ToInt32(Application["count"]);
+Application["count"]=++num;
+}
+else
+{
+Application["count"]=0;
+}
+Response.Write(Application["count"]);
+Application.UnLock();//解锁
+
+
+--------------------------AJAX--------------------------
+
+AJAX:"Asynchronous JavaScript and XML"
+
+中文意思：异步JavaScript和XML。
+指一种创建交互式网页应用的网页开发技术
+不是指一种单一的技术，而是有机地利用了一系列相关的技术：
+简单理解为：JavaScript + XMLHttpRequest + CSS +服务器端 的集合.
+
+
+Ajax在本质上是一个浏览器端的技术 
+Ajax技术之主要目的在于局部交换客户端及服务器间之数据 
+这个技术的主角XMLHttpRequest 的最主要特点，在于能够不用重新载入整个版面来更新资料，也就是所谓的Refresh without Reload(轻刷新)
+与服务器之间的沟通，完全是透过Javascript 来实行 
+使用XMLHttpRequest 本身传送的数据量很小，所以反应会更快，也就让网络程式更像一个桌面应用程序 
+AJAX 就是运用Javascript 在后台悄悄帮你去跟服务器要资料，最后再由Javascript 或DOM 来帮你呈现结果，因为所有动作都是由Javascript 代劳，所以省去了网页重载的麻烦，使用者也感受不到等待的痛苦
+
+XMLHttpRequest对象:异步从服务器端获取txt或者xml数据
+Ajax应用程序的核心就是它。
+XMLHttpRequest对象在IE浏览器和非IE浏览器中创建的方法不同。
+
+创建对象； - new  (叫助手过来)
+创建请求； - open (告诉他要去做的事情)
+发送请求； - send (去吧)
+
+
+先来创建XMLHttpRequest对象
+在IE、Firefox、safari和Opera中创建该对象的JavaScript代码为：
+	var xhr = new XMLHttpRequest();
+在IE5/6中代码为：
+	var xmlRequest = new ActiveXObject(“Microsoft.XMLHTTP”);
+		注意，JavaScript区分大小写。
+		
+二、为XMLHttpRequest对象设置请求参数
+      1.GET方式
+            1.1设置参数
+            xhr.open("GET", "GetAreasByAjax.ashx?isAjax=1", true);
+     1.2GET方式请求可以设置浏览器不使用缓存xhr.setRequestHeader("If-Modified-Since", "0"); 
+            1.3发送: xhr.send(null);//GET方式 
+	2.POST方式：       1.1设置参数：xhr.open("POST", "GetAreasByAjax.aspx", true);       1.2添加请求头：xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            1.3发送：xhr.send("isAjax=1&na=123");//POST方式
+
+设置回调函数
+异步使用XMLHttpRequest对象
+	异步使用XMLHttpRequest对象时，必须使用：onreadystatechange事件。
+	使用模式应该是：
+创建该对象；-new
+设置readystatechange事件触发一个回调函数; -onreadystatechagne
+打开请求；-open
+发送请求；-send
+       注：在回调函数中检查readyState属性，看数据是否准备就绪(是否等于4)。
+如果没有准备好，隔一段时间再次检查。因为数据没有下载完时，我们无法使用它的属性和方法。
+如果已经准备好，就继续往下执行；
+
+
+编写回调函数
+1.在xhr.send之前添加设置回调函数代码：
+xhr.onreadystatechange = watching;
+
+2.回调函数
+function watching() {
+       if (xhr.readyState == 4) {//请求状态
+           if (xhr.status == 200) {//服务器返回的状态码
+               var msg = xhr.responseText; //服务器返回的字符串
+           } else alert("服务器错误!" + ajaxH.status);
+       }
+}
+
+
+异步对象readyState属性
+
+readyState属性
+		readyState属性指出了XMLHttpRequest对象在发送/接收数据过程中所处的几个状态。XMLHttpRequest对象会经历5种不同的状态。
+0：未初始化。new完后;
+1：已打开。对象已经创建并初始化，但还未调用send方法
+2：已发送。已经调用send 方法，但该对象正在等待状态码和头的返回；
+3：正在接收。已经接收了部分数据，但还不能使用该对象的属性和方法，因为状态和响应头不完整；
+4：已加载。所有数据接收完毕
+
+
+常用方法
+abort		取消请求
+open		需要使用多个参数，第一个设置方法属性，第二个设置目标URL，第三个指定是同步(false)还是异步(true)发送请求
+send		发送请求到服务器
+setRequestHeader 添加自定义HTTP头到请求
+getAllResponseHeaders 获取HTTP响应头的整个列表
+getResponseHeader	仅获取指定的HTTP响应头
+
+常用属性
+onreadystatechange	返回或设置异步请求的事件处理程序
+readyState		返回状态码：0：未初始化；1：打开；2：发送；3：正在接收；4：已加载
+responseText		使用字符串返回HTTP响应
+responseXML		使用XML DOM对象返回HTTP响应
+status			返回HTTP状态码
+
+Json--B/S结构数据传递格式
+AJAX传递复杂数据如果自己进行格式定义的话会经历组装、解析的过程，因此AJAX中有一个事实上的数据传输标准JSon。Json（是一个标准，就像XML一样，Json规定了对象以什么样的格式保存为一个字符串）将复杂对象序列化为一个字符串，在浏览器端再将字符串反序列化为JavaScript可以读取的对象。看一下Json的格式。Json被几乎所有语言支持。
+JSON是js对象的一个字面量表示法.
+C#中将.Net对象序列化为Json字符串的方法：JavaScriptSerializer().Serialize(p)， JavaScriptSerializer在System.Web.Extensions.dll中，是.Net3.x 中新增的类。完整：System.Web.Script.Serialization.JavaScriptSerializer
+
+
+编程常见错误
+XMLHttpRequest大小写不正确；
+多写了对圆括号：
+	正确：xHRObject.onreadystatechange =getData;
+	错误：xHRObject.onreadystatechange =getData();
+必须弄清楚，在JavaScript中：
+函数名后如果有圆括号，意思就是将函数的返回值赋给等号左边的变量；
+没有圆括号，是将函数本身赋给等号前的变量。
+
+AJAX无法跨域请求，用Jsonp
+<script src='http://www.baidu.com/1.aspx'></script>
+document.createElement("script");
+
+
+------------------jsonp start-------------------
+
+<script type="text/javascript">
+        function acceptJson(jsonObj)
+        {
+            alert(jsonObj);
+        }
+
+        window.onload = function () {
+            //alert(json.name);
+        };
+</script>
+<script src="http://localhost:3229/Web/Target.aspx" type="text/javascript"></script> //可以跨域访问，但要返回js代码。
+
+//异步对象不能访问其他域名
+<script type="text/javascript">
+//window.onload=function()
+//{
+//var xhr=new XMLHttpRequest();
+//xhr.open("get","http://localhost:3229/Web/Target.aspx",true);
+//xhr.setRequestHeader("If-Modified-Since",0);
+//xhr.onreadystatechange=function()
+//{
+//if(xhr.readyState==4&&xhr.status==200)
+//{
+//	var res=xhr.responseText;
+//	alert(res);
+//}
+//};
+//xhr.send(null);
+
+//}
+
+</script>
+
+void Page_Load(object sender,EventArgs e)
+{
+	//string str="var json= {id:1,name:'sss'}";//"alert('123')";//"<input type='text' name='txtName'>";
+	string str = "acceptJson({id:1,name:'sss'})";
+	Response.Write(str);
+	Response.End();//立即输出Response中的响应报文数据，同时结束当前代码的执行。
+}
+
+
+
+var xhr=new XMLHttpRequest();
+function doAdd()
+{
+xhr.open("post","Atricle.ashx",true);//设置请求参数
+xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");//设置传值的编码格式
+
+xhr.onreadystatechange=function()
+{
+	if(xhr.readState==4&&xhr.status==200)
+	{
+		var res=xhr.responseText;
+		
+	}
+}
+
+}
+
+
+
+------------------jsonp end-------------------
+
+
+
+2-2 Ajax-XMLHttpRequest对象创建
+var request;
+if(window.XMLHttpRequest)
+{
+request=new XMLHttpRequest();//IE7+ chrome,firefox,opera..
+}
+else
+{
+request=new ActiveXObject("Microsoft.XMLHttp");//IE6,IE5
+}
+
+2-3 Ajax-HTTP请求
+1.建立tcp连接
+2.web浏览器向web服务器发送请求命令
+3.web浏览器发送请求头信息
+4.web服务器应答
+5.web服务器发送应答头信息
+6.web服务器向浏览器发送数据
+7.web服务器关闭tcp连接
+
+
+
+2-5 Ajax-XMLHttpRequest取得响应
+var request=new XMLHttpRequest();
+request.open("GET","get.php",true);
+request.send();
+request.onreadystatechange=function()
+{
+if (request.readyState===4&&request.status===200) {
+//dosomething request.responseText
+}
+}
+
+
+
+6-2 处理跨域方式--JSONP
+jquery支持jsonp
+
+dataType:"jsonp",
+jsonp:"callback"
+
+后台接收 jsonp 后台获取 callback
+jsonp 用点号连接 括号扩取 参数值
+
+
+
+xhr2
+服务端
+header("Access-Control-Allow-Origin:*");
+header("Access-Control-Allow-Methods:POST,GET");
+
+
+
+
+----------mvc
+
+
+mvc Return File
+MemoryStream file = new MemoryStream();
+string contentType = "application/vnd.ms-excel";
+string fileName = "第三方订单数据.xls";
+work.Write(file);
+return File(file.GetBuffer(), contentType, fileName);
+
+
+mvc优点：
+1、很容易将复杂的应用分成mvc三个组件模型。通过model、view和controller有效简化了复杂的架构，体现了很好的隔离原则。
+2、因为没有使用server-based forms。所以我们程序员控制得更加灵活，页面更加干净。
+3、可以控制生成自定义的url。对于seo友好。
+4、强类型view实现，更安全、可靠、高效。
+5、让web开发可以专注于某一层。更利于分工配合适用于大型架构开发。
+
+
+Filter
+全局
+多个标签时，最靠近Action的被执行。或者设置Attribute为mul
+
+前台模板的Helper使用方法，放到App_Code文件夹中就可以为所有的页面提供服务了。如果定义在当前页面只能被当前页面使用。
+@Helper ShowData(DataTime dt)
+{
+<span>@dt.Year 年 @dt.Month 月 @dt.Day 日</span>
+}
+
+displayfor模板 
+@Html.DisplayForModel() //显示实体
+//根据模板生成
+注意：必须在share文件夹下添加文件夹：DisplayTemplates。添加页面。
+然后使用前台demo：
+@Html.DisplayForModel("ShowUserInfoTemp") //ShowUserInfoTemp（页面名称--模板名称） ShowUserInfoTemp.cshtml
+
+
+
+
+
+
+
+----------------------------------HTTP end------------------------------
+
+
+
+----------------------------------WCF start-------------------------
+LBS
+
+系统  请求数据（如：110） --  webservice  --  db（把电话号码放到队列表）
+ --  cs程序  定时的到队列里面去取出要请求定位的电话号码  
+ --  通过socket请求移动的系统  定位系统 将定位结果返回给cs程序--返回数据放到db--返回给webservice
+
+
+SOAP协议：
+WebService 通信  不需要socket
+
+
+1、服务的异步化：
+同步，oneway，纯异步方式。
+2、WCF通信方式
+单工、双工
+3、服务的实例管理
+per request:new Service()
+per Session
+单例模式：全局共用一个服务实例
+[ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
+4、服务路由功能
+.NET4
+5、Rest风格的WCF服务
+6、安全性
+7、WCF中分布式的事务：看程立关于SOA分布式服务的事务处理
+
+全球最大易趣：500W
+
+应用集群方案NLB（NetWork Loading Balance）网络负载均衡(LVS：抛弃)F5
+
+
+集群ip
+集群的mac
+
+机器1 装上NLB组件
+机器2 装上NLB组件
+机器3 装上NLB组件
+
+数据库集群读写分离（MySpace 5次重构经历）
+
+
+主DB		从DB
+
+
+
+	IIS
+
+
+
+死锁：
+
+request1	request2
+
+1		2
+
+数据库在请求超时后释放掉没用的请求
+
+解决死锁
+1、请求资源的时候尽量顺序一致。
+2、查询多表数据不加锁
+select S锁 X锁排它锁
+select * from UserInfo with(nolock)
+
+主DB	添加、修改操作
+从DB	读操作
+
+
+
+表的锁级别降到行级别
+
+
+wcf优化总结
+wcf服务配置优化：使用udp传递消息更省带宽。
+服务部署OneWay/异步化尝试。
+多数据库读写分离实现。
+把数据库读的S锁降低到行级别。
+主库去掉外键、去掉非必需索引，从库添加索引。
+IIS配置成可以允许10w同时访问。
+IIS设置输出缓存。
+图片上传压缩，输出压缩后传送。
+但节点缓存到高可用性缓存。
+去掉wcf日志，启用我们自己的日志（SaveChanges）NLog：写到mongodb
+
+减少查询次数（减少交互次数，并发性能提升）
+增大服务粒度
+尽可能少的从数据库取数据
+特殊情况sql化
+减少与数据库交互，尽量批量提交数据
+减少数据折腾路径
+linq精简优化
+良好利用ef的延迟加载
+学会使用异步方式编程
+
+消息访问量大，放入队列批量插入。
+人脉好友数据重叠，放入NoSql解放SqlServer，提高查询速度。
+加好友、发名片放入NoSql极大解放速度。
+图片服务器支撑大量访问（前端异步获取图片和上传压缩图片、后台图片压缩并配合输出缓存）
+登录异步化，解决小精灵卡、登录慢等问题。
+图片服务器、xxx主站点、升级服务器分开部署。
+并发已经很牛逼了。
+3%	30w%3%=9000
+
+
+UI/ASP.NET MVC/WEBFORM/WPF/ANDROID/IOS/OTHER APP
+FACADE：通过IOC确定走的是具体的服务还是本地			Common IOC LOG CACHE队列
+IService服务接口层
+服务封装层：解决日志、行为记录、异常处理
+BP	SV
+
+DomainModel	IRepository NoSqlRepositor DBRepository		
+
+PL驱动
+
+NoSql	SqlServer	Oracle
+
+
+cpu/io/带宽/内存	权衡
+
+
+LR
+AQTime
+TD
+
+
+
+
+
+
+iYou外网优化总结教训经验：
+
+经过前期iYou服务外网平台搭建和优化，我做了一些思考和总结，并学习了很多其他公司或者平台搭建的一些思想，现总结如下，希望能在后面的iYou、IWe或者其他项目开发时，有所借鉴。
+
+1、SOA服务的粒度的把控：
+由于之前iYou开发都是由开发人员直接设计Edmx模型，然后设计服务，这种是自下而上的方式，后面开发了很多的服务，粒度的把控也不是很好，最终导致很多重复性开发以及不适于前端的调用，而导致了大量工作的返工。
+建议：服务在设计时应该是自上而下或者在服务开发之前做相应的调整。尽量的保证服务粗粒度化，这样就能减少前端的调用次数，当然这跟减少页面的Http请求的效果是一致的。另外现在通过UML序列图的方式也综合了自上而下的开发方式，为底层的业务模型修改完善提供了更好的契机。那么在开发的时候也可以进一步去讨论需要公开的服务，补充上粒度比较细的那一部分。也就是说先把握大局从上到下，然后抓住细节从下到上。
+2、接口的定义：
+接口是否代表了业务、是否是合适的粒度、是否会有性能问题，别小看接口设计，一旦确定以后很难修改，接口的好坏决定成败。所以接口的设计很重要。接口设计的好坏也直接影响到了性能问题，
+3、图片服务器跟Web服务器分离
+目前图片服务器跟Web服务器在同一台机器上，图片的访问量非常大，而且没有经过压缩和缩略图等处理，当然图片的处理也有很多的技术后面细细说。图片的请求占用资源比较多，而主Web请求占用时间比较短，而在请求队列中等待的时间却很长，图片的请求严重影响了Web的正常注册和找回密码等请求。
+建议：图片和web服务器分开，Web站点加一些客户端缓存，以及服务端缓存等技术，将请求的处理提高一些并发性能，用ApacheBench测试我们的请求并发处理是4个/s，通过缓存相信能提高至少10倍。
+4、关于图片处理：
+当前的随记中的图片没有做任何的处理，建议在客户端做压缩和处理，上传一张处理后的图片，一般图片也就是40k就可以了，而查看图片文件夹内部很多图片>300K，一次下载太浪费带宽了，客户端现在做了前端的缓存，稍微减少了部分图片的请求。
+建议：前端压缩和处理图片，后台取图片时根据前端需要生成对应的缩略图【第一次，后面就直接返回】并返回，建议图片的名字中可以做些文章加入一些元数据等记录图片所放位置、格式、时间、大小、类型等，后面扩展时可以直接通过图片名访问对应的 Key数据库，获取到具体的路径【可以参考淘宝的图片文件系统：Taobao File System 简称：TFS】 ，图片文件传输的时候可以做压缩，但要考虑到压缩解压缩需要CPU资源，在IO（磁盘，带宽，传输能力）和CPU之间有一个平衡的考虑。
+5、关于分布式事务性能问题的探讨
+由于在soa架构的系统中，服务级别的分布式事务由于占用事务锁的时间比较长，并发大的时候很容易导致死锁。这是iYou前期开发遇到的血的教训，而后面做iWe时，肯定 某些具体模块还得使用事务保证数据的完整性。
+建议：采用异步队列的方式解决必须由事务保证的数据操作。分布式事务的替代方式是采用队列，放到队列中的东西就认为是一定可以成功的，对于不使用队列的情况，如果调用失败了则记录日志，不会进行回滚。除非涉及到钱或者非常重要的数据的地方才做分布式事务。
+6、关于缓存：
+目前分布式缓存其实是一个单一的节点，而且只有分布式缓存挂掉，所有用户掉线，整个应用服务都得重启，所有它是不可靠的，当然可以进行扩展。
+建议：分布式缓存可以考虑使用NoSql DB比如：MongoDB，此NoSql数据库并发性能非常好，而且可以简易的进行分布式部署，节点很容易进行扩展，另外当前我们的所有的对数据库的操作和查询都是直接面对的数据库，而中间没有相应的一级二级缓存，导致压力还是都直接给了数据库，性能的瓶颈最终会在数据库端有所体现。
+7、关于数据库：
+数据库要求非常高，CPU和内存消耗都比较大，另外对IO的读写也要求比较高，当前数据库的分配应该还算可以了。后面我们再设计业务或者Edmx时，尽量多考虑后期能进行垂直分库、水平分库等。
+另外就是数据库集群一定要利用起来，不管是发布、订阅、镜像等技术实现读数据库间数据同步，一定在平台级别解决读写分离。
+8、关于www.iuoooo.com 站点
+此站点职责很清新就是用户注册、密码找回、客户端下载导向等。当然目前业务很简单，如果是到了IWE我们做Web的多模块集成的时候，多注意一下，因为web服务器考虑以后可能做负载均衡。做负载均衡就要考虑Web站点能按功能分割，只有分割了才能有伸缩性。
+再有就是站点的缓存：客户端缓存和服务端缓存都没做，性能较差，建议使用：ApacheBench有针对性并发测试压一下，也可以用loadrunner或者VS的压力测试工具。
+9、关于日志：
+异常时我们才需要日志，而正常操作日志可以通过行为分析等组件进行记录，而并不需要记录浪费性能【文件太大，十分占用磁盘的IO和磁盘空间】，而关闭日志，异常等信息我们又捕捉不到，所以日志这个还是需要我们平台或者项目进行考虑一个解决方案。
+10、关于硬件：
+数据库服务器：内存、CPU、磁盘读写速度 都要好
+应用服务器：内存和CPU大点
+图片、iYou升级下载服务器：磁盘、带宽要求比较高
+Web主站点：带宽、CPU、内存要求高
+11、总节
+一切都是为了性能、稳定性、可维护性，尽量保证节点保持简单的逻辑，尽量减少同一层次节点之间的依赖，并实现功能分解、使用异步进行整合、故障转移、失效保护。  数据方面实现读写分离、数据库分隔、功能划分、缓存、镜像。最终理想的可伸缩性架构是可以自由增加或替换服务器，无需去停机维护或做很大的调整。
+
+
+
+
+
+
+
+
+
+--------wcf
+WCF的今生前世
+    早在Web Service出现之前，已经有很多企业都实现了自己的EAI（Enterprise Application Integration）企业应用整合，但此时并没有被大家所公认的技术规范，所以那时的集成方案比较分散，没有统一标准，尽管有些EAI做得还比较成功，苦于没有技术规范，很难得以推广。而出现Web Service后，由于更大厂商（包括IBM,MS等）的大力支持，Soap成为大家所公认的技术规范，很快就成为了解决这一难题的制胜法宝。MS为响应这种变化，
+在.Net平台中推出了自身的Web Service产品，也就是Asp.Net Xml Web Service,但这个框架在通讯安全和性能等方面存在着一些难以解决的问题，虽然后来又增加了WSE来弥补不足，但整体看来，Asp.Net Xml Web Service的不足还是显而易见的。在安全方面，WSE对Xml Web Service作了很大的改进，支持ws等网络服务的安全标准，但它作为框架的扩展，最新版本3.0还在beta阶段，而且这个扩展框架鲜为人知，服务端如果使用了WSE，
+那也要求客户端使用，而由于这个框架没有被广泛的推广，很可能给对客户端开发人员增加开发和部署难度。
+在性能方面，.Net Remoting技术相比Web Service略有优势，但学起来有一定难度，最要命的是它不能实现跨平台的操作，一个用.Net Remoting写的Service很难用Java来调用，这就使得其实用性大打折扣，MSMQ支持消息队列，但需要整合在其他系统之中，传统的Enterprise Service支持分布式事务，但同样没有Web Service的跨平台特性。
+此时，WCF应运而生，它整合了MS历来最优秀的分布式系统开发技术，取其精华，弃其糟粕，是分布式应用程开发技术的集大成者，它解决了跨平台的问题，同时支持安全通讯和分布式事务。由于其简单易学，在推广上也必然比较顺利，可以说WCF将开辟分布式开发技术的一个新纪元，其影响应该不在当年Web Service之下。
+
+
+--------服务寄宿
+wcf编程系列（一）
+
+Interface
+添加引用System.Runtime.Serialization,System.ServiceModel
+
+接口添加服务契约标识[ServiceContract]
+接口成员添加操作契约标识[OperationContract]
+
+[ServiceContract]//打上服务契约的接口
+public interface IUserInfoRegistService
+{
+     [OperationContract]//操作契约
+     UserInfoDTO RegisterUserInfo(UserInfoDTO user);
+}
+
+
+传输类
+类上添加序列化标签[Serializable]
+类添加数据契约[DataContract]
+成员添加成员标签[DataMember]
+
+[Serializable]
+[DataContract]//数据契约
+public class UserInfoDTO
+{
+     [DataMember]//序列化当前的属性；如果不打上此标签，则序列化此对象的时候，不会序列化此属性。
+     public string Code { get; set; }
+     [DataMember]
+     public string Pwd { get; set; }
+}
+
+
+寄宿的地方(Host)
+添加引用System.ServiceModel
+添加接口和实现接口
+using(ServiceHost host=new ServiceHost(typeof(service)))
+{
+host.Open();
+Console.WriteLine("服务已启动，按任意键中止...");
+Console.ReadKey(true);
+host.Close();
+}
+
+Host添加配置文件
+wcf使用指南
+
+service name -- 服务实现的全名称 WcfServiceImpl.UserInfoRegistService
+behaviorConfiguration -- 服务行为
+behaviors -- 服务行为绑定的信息
+serviceMetadata httpGetEnabled -- 允许请求获取服务原信息
+
+  <system.serviceModel>
+    <services>
+      <service name="WcfServiceImpl.UserInfoRegistService" behaviorConfiguration="behaviorConfiguration">
+        <host>
+          <baseAddresses>
+            <add baseAddress="http://localhost:8000/"/>
+          </baseAddresses>
+        </host>
+        <endpoint address="" binding="basicHttpBinding" contract="WcfServiceInterface.IUserInfoRegistService"></endpoint>
+      </service>
+    </services>
+    <behaviors>
+      <serviceBehaviors>
+        <behavior name="behaviorConfiguration">
+          <serviceMetadata httpGetEnabled="true"/>
+        </behavior>
+      </serviceBehaviors>
+    </behaviors>
+  </system.serviceModel>
+
+
+服务启动后通过配置的baseAddress即http://localhost:8000/访问可测试服务是否启动
+
+
+wcf调试工具
+D:\Program Files\Microsoft Visual Studio 10.0\Common7\IDE
+D:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\
+WcfTestClient.exe
+
+启动服务--文件--添加服务--添加地址
+
+
+添加客户端
+
+我们将使用微软的svcutil工具生成FirstService服务的客户端代理类，通过开始菜单/Microsoft Visual Studio 2008/Visual Studio Tools/Visual Studio 2008命令提示,启动命令环境。
+cmd  VS2017开发人员命令提示符 （C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Visual Studio 2017\Visual Studio Tools）Developer Command Prompt for VS 2017 (2).exe
+
+切换到当前解决方案目录(先进入根目录cd d:/  再进入其他根目录 d:\>f:  再进入具体目录 f:\>cd F:\WcfServiceHost\WcfServiceClient )
+ F:\WcfServiceHost\WcfServiceClient
+
+输入命令
+svcutil http://localhost:8000/?wsdl /o:FirstServiceClient.cs
+
+执行成功后，会在解决方案目录下生成两个文件：FirstServiceClient.cs 和output.config
+
+中止Host项目的调试，回到Client项目，选择添加 现有项 ，然后选择这两个文件，添加后，将output.config重命名为App.config
+Client项目中添加引用，选择System.ServiceModel
+如果System.CodeDom 报无引用  添加程序集 System 引用
+
+保留IUserInfoRegistServiceChannel 和 UserInfoRegistServiceClient 添加到WcfServiceInterface
+
+static void Main(string[] args)
+{
+            var code = Console.ReadLine();
+            var pwd = Console.ReadLine();
+            userInfoDTO info = new userInfoDTO() { Code = code, Pwd = pwd };
+            UserInfoRegistServiceClient client = new UserInfoRegistServiceClient();
+            var userInfo = client.RegistUserInfo(info);
+            Console.WriteLine("service return code:" + userInfo.Code + " \r\n" + "service return Pwd:" + userInfo.Pwd);
+
+            Console.ReadKey();
+}
+
+
+接口实现类
+防止并发
+[ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.Single)]
+public class UserInfoRegistService : IUserInfoRegistService
+{
+        public UserInfoDTO RegisterUserInfo(UserInfoDTO user)
+        {
+            Console.WriteLine(user.Code+" "+user.Pwd);
+            //处理服务逻辑
+            return new UserInfoDTO() { Code = "wcfdemo", Pwd = "123" };
+        }
+}
+
+
+
+
+
+分布式本质
+依赖接口编程（wcf调远程服务器里的代码）
+new 不同服务器里的具体实现
+
+
+
+----------------------------------WCF end-------------------------
+
+
+----------------------------------WebApi 和 MVC start----------------------------------
+
+Web API更倾向于基于HTTP协议的服务，直接返回用户的数据请求。MVC是建站的一种框架，倾向于返回用户的页面请求。
+
+----------------------------------WebApi 和 MVC end----------------------------------
+
+
+----------------------------------WCF WebApi WCFREST WebService 区别 start-------------------------
+
+WebService
+1、它是基于SOAP协议的，数据格式是XML。
+2、只支持HTTP协议。
+3、它不是开源的，但可以被任意一个了解XML的人使用。
+4、它只能部署在IIS上。
+
+WCF
+1、基于SOAP，数据格式是XML。
+2、这个是WebService（ASMX）的进化版，可以支持各种各样的协议，像TCP,HTTP,HTTPS,Named Pipes，MSMQ.
+3、主要问题，配置起来繁琐。
+4、不开源，但可以被任意一个了解XML的人使用。
+5、它可以部署应用程序中或者IIS上或者Windows服务中。
+
+WCF Rest
+1、想使用WCF Rest service，你必须在WCF中使用webHttpBindings。
+2、它分别用[WebGet]和[WebInvoke]属性，实现了Http的get和post动词。
+3、先搞使用其他的HTTP动词，你需要在IIS中做一些配置，是.SVC文件可以接受这些动词的请求。
+4、使用WebGet通过参数传输数据，也需要配置。而且必须制定UrlTemplate。
+5、它支持XML、JSON以及ATOM这些数据格式。
+
+Web Api
+1、这是一个简单的构建HTTP服务的新框架。
+2、在.NET平台上WebApi是一个开源的、理想的、构建REST-ful服务的技术。
+3、不像WCF REST Service，它可以使用HTTP的全部特点（比如URIs、request/response头，缓存，版本控制，多种内容格式）
+4、它也支持MVC的特征，像路由、控制器、action、filter、模型绑定、控制反转（IOC）或依赖注入（DI），单元测试。这些可以使程序更简单、更健壮。
+5、它可以部署在应用程序和IIS上。
+6、这是一个轻量级的框架，并且对限制带宽的设备，如智能手机等支持的很好。
+7、Response可以被Web API的MediaTypeFormatter转换成Json、XML或者任何你想转换的格式。
+
+WCF和WEB API应选择哪个
+1、当你想创建一个支持消息、消息队列、双工通信的服务时，你应该选择WCF。
+2、当你想创建一个服务，可以用更快速的传输通道时，像TCP、Named Pipes或者甚至是UDP（在WCF4.5中），在其他传输通道不可用的时候也可以支持HTTP。
+3、当你想创建一个基于HTTP的面向资源服务并且可以使用HTTP的全部特征时（比如URIs、request/response头，缓存，版本控制，多种内容格式），你应该选择Web API。
+4、当你想让你的服务用于浏览器、手机、iPhone和平板电脑时，你应该选择Web API。
+
+
+
+----------------------------------WCF WebApi WCFREST WebService 区别 end-------------------------
+
+
+----------------------------------O/R Mapping start-------------------------
+
+广义上，ORM指的是面向对象的对象模型和关系型数据库的数据结构之间的相互转换。
+狭义上，ORM可以被认为是，基于关系型数据库的数据存储，实现一个虚拟的面向对象的数据访问接口。理想情况下，基于这样一个面向对象的接口，持久化一个OO对象应该不需要了解任何关系型数据库存储数据的实现细节。
+
+EF实体模型EDM由以下三种模型和具有相应文件扩展名的映射文件进行定义。
+概念架构定义语言文件（.csdl）--定义概念模型。
+存储架构定义语言文件（.ssdl）--定义存储模型。
+映射规范语言文件（.msl）--定义存储模型与概念模型之间的映射M。
+
+实体框架使用这些基于XML的模型和映射文件将对概念模型中的实体和关系的创建、读取、更新和删除操作转换为数据源中的等效操作。EDM甚至支持将概念模型中的实体映射到数据源中的存储过程。
+
+Entity Data Model（实体数据模型） 作用:将关系数据库模型映射为实体数据模型、由三部分组成，存放在扩展名为.edmx的XML文件中
+EDM MetaData
+SSDL	存储模型：负责与数据库中的数据表做实体对应（就是将数据库中数据表结构和关系用XML文件描述）。
+MSL	映射：将存储模型中的字段和概念模型中的属性对应。
+CSDL	概念模型：概念模型对应的是实体类，用实体类表示数据库中的对象。
+
+ObjectServices	提供接口
+EntityClient	封装操作 用来操作 EDM MetaData
+ADO.NET Provider 最后执行 翻译成SQL语句
+
+Entity Client（实体代理）概念及作用
+概念：EntityFramework实现了一套类似于ADO.NET中的数据库操作类，这些操作类称为Entity Client
+作用：用来操作EDM（实体数据模型）
+
+Entity Client与ADO.NET对比
+ADO.NET的链接类是向数据库发送SQL命令操作表或试图，Entity Client是向EDM发送Entity SQL
+Entity Client通过Entity Connection、Entity Command等类进行模拟ADO.NET，有自己的SQL语句
+Entity Client将查询转交给数据库提供者ADO.NET Provider，并由数据库提供者翻译为SQL语句
+
+ADO.NET Provider
+作用：翻译成SQL语句，用来访问数据库
+说明：Entity Framework是ADO.NET的一个技术子集
+
+
+EF中，CRUD都是针对CLR对象操作，EF会监控对象状态的变化
+在执行SaveChanges()方法时，根据对象的状态变化执行相应的操作来更新数据库
+
+
+
+
+IQueryable接口与IEnumberable区别：
+IEnumberable<T>泛型类在调用自己的SKip和Take等扩展方法之前数据就已经加载在本地内存里了，
+而IQueryable<T>是将SKip,take这些方法表达式翻译成T-SQL语句之后向SQL服务器发送命令。也是延迟在我要真正显示数据的时候才执行。
+
+IEnumberable 调用自己的方法之前数据就已经加载到本地内存中了。
+IQueryable 将自己的方法表达式翻译成T-SQL再像sql服务器发送命令。
+
+
+
+//查询的结果放入IQueryable接口的集合中
+IQueryable<T_Class> classesIQue = (from c in schoolEntities.T_Class
+                                                   orderby c.ID
+                                                     select c).Skip<T_Class>(3).Take<T_Class>(3);
+//注意这个AsEnumerable<T_Class>()在分页查询之前，先将其转换成IEnumerable类型
+IEnumerable<T_Class> classesIEnu = (from c in schoolEntities.T_Class
+                                                    orderby c.ID   
+                                                    select c).AsEnumerable<T_Class>().Skip<T_Class>(3).Take<T_Class>(3);
+//因为启用了延迟加载机制，所以下面调用一下，才会真正去读取数据库
+
+AsEnumerable<T_Class>() linq查询实体集合之前将其转换成IEnumerable接口。
+第一种：直接返回IQueryable类型的查询。
+IQueryable接口访问的是根据生成的命令树翻译成sql。并不是把所有数据都加载到内存中。
+
+第二种：在用分页查询之前先将其转换成 IEnumerable实际执行的sql 将整个表查询出来。
+
+IQueryable接口与IEnumberable接口的区别：  
+IEnumerable<T> 泛型类在调用自己的SKip 和 Take 等扩展方法之前数据就已经加载在本地内存里了，
+而IQueryable<T> 是将Skip ,take 这些方法表达式翻译成T-SQL语句之后再向SQL服务器发送命令，它并不是把所有数据都加载到内存里来才进行条件过滤。
+
+
+
+
+
+普通linq写法：
+var result=from c in Entities.Customer select c;
+Lambda写法：
+var result=from c in Entities.Customer.Where<Customer>(c=>c.Gender=='m');
+排序分页写法：
+IQueryable<Customers> cust=(from c in customers orderby c.CustomerID select c).Skip(0).Take(10);
+
+左外连接：可以的连接有Join和GroupJoin方法。GroupJoin组连接等效于左外连接，它返回第一个左侧数据源的每个元素（即使其他数据源中没有关联元素）。
+var query=from d in edm.Order_Details
+	  join order in edm.Orders
+	  on d.OrderID equals order.OrderID
+	  select new{OrderId=order.OrderID,ProductId=d.ProductID,UnitPrice=d.UnitPrice};
+
+延迟加载
+又称懒加载，也就是linq to ef 并不是直接将数据查询出来，而是要用到具体数据的时候才会加载大内存。
+Include是将关联实体一块加载。
+ToList等可以直接将数据加载到内存。
+
+
+上下文实体
+不同的上下文实体直接控制对应的实体
+实体只能由一个上下文跟踪管理
+EF上下文的ObjectStateMagner管理实体
+批量操作时提交数据库的选择
+延迟加载机制的选择
+查询Distinct的使用数据量大小适时的选择是在内存中操作还是在数据库中操作
+
+EF跨数据库支持
+
+
+：mvchtmlstring 可以防止string encode  返回mvchtmlstring.create
+=
+
+
+
+
+            IEnumerable<object> ll = (IEnumerable<object>)list.Where(r => r.Name.Contains("name") && r.Age <= 20 && r.Age >= 18).OrderBy(r => r.Age).Select(a => new { a.Name, a.Age, a.Class });
+
+            list.ForEach(r =>
+            {
+                r.Name = "name1";
+                r.Age = 18;
+            });
+
+            list1.Sort((stu1, stu2) => stu1.Name.CompareTo(stu2.Name));
+
+            //ll.Union(list);//并集
+            //ll.Intersect(list);//交集
+            //ll.Except(list);//差集
+
+            IEnumerable<object> l = list1.Join(list, o => o.Name, r => r.Name, (o, r) => new { name = r.Name, age = r.Age });
+
+	    var aa=  proTypes.GroupJoin(products, t => t.Id, r => r.TypeId, (t, r) => new { products=r,t.Name });
+            var bb = products.Select(r => r.Name).Concat(proTypes.Select(r => r.Name)); //concat 串联是一个将两个集合联接在一起的过程,将会把类别名称串联在产品名称之后。
+
+
+
+
+
+
+-----------------NHibernate
+
+orm简化程序员的操作
+orm做的最关键的一件事就是维护内存里的数据和数据库表里对应的数据一致。
+
+
+持久化：
+瞬时状态：保存在内存的程序数据，程序退出后，数据就消失了。
+持久化：将程序数据在瞬时状态和持久状态之间转换的机制。
+持久状态：保存在磁盘上的程序数据，程序退出后依然存在。
+
+内存
+stu s=new str();
+用ado.net完成数据在持久和瞬时状态间的转换。
+cmd.ExcuteNonQuery();
+数据库
+
+NHibernate：
+1、开源的ORM框架。
+2、简化数据库操作的开发。
+功能：将.NET实体对象直接持久化到数据库。
+在ADO.NET基础上进行封装
+只需要少量代码就可以完成持久化工作
+通过映射文件保存映射信息
+在业务层以面向对象的方式编程，不用考虑数据保存形式
+
+
+
+
+
+
+
+
+
+
+----------------------------------表达式树 s----------------------------------
+
+
+Expression<Func<SalesListDetail,bool>> whereLambda = a => a != null;
+if (!string.IsNullOrEmpty(serialNum))
+{
+      whereLambda = whereLambda.And(a => a.SerialNum.Equals(serialNum));
+}
+
+
+
+public static class GetLists
+    {
+        public static IQueryable<T> LoadPageItems<T, Tkey>(this IQueryable<T> list, SaleManagerDBEntities efdb, int pageSize, int pageIndex, out int total, Expression<Func<T, bool>> whereLambda, Func<T, Tkey> orderbyLambda, bool isAsc) where T : class where Tkey : struct
+        {
+            total = efdb.Set<T>().Where(whereLambda).Count();
+            if (isAsc)
+            {
+                var temp = efdb.Set<T>().Where(whereLambda)
+                             .OrderBy<T, Tkey>(orderbyLambda)
+                             .Skip(pageSize * (pageIndex - 1))
+                             .Take(pageSize);
+                return temp.AsQueryable();
+            }
+            else
+            {
+                var temp = efdb.Set<T>().Where(whereLambda)
+                           .OrderByDescending<T, Tkey>(orderbyLambda)
+                           .Skip(pageSize * (pageIndex - 1))
+                           .Take(pageSize);
+                return temp.AsQueryable();
+            }
+        }
+
+    }
+
+    public static class PredicateBuilder
+    {
+        public static Expression<Func<T, bool>> True<T>() { return f => true; }
+        public static Expression<Func<T, bool>> False<T>() { return f => false; }
+        public static Expression<T> Compose<T>(this Expression<T> first, Expression<T> second, Func<Expression, Expression, Expression> merge)
+        {
+            var map = first.Parameters.Select((f, i) => new { f, s = second.Parameters[i] }).ToDictionary(p => p.s, p => p.f);
+            var secondBody = ParameterRebinder.ReplaceParameters(map, second.Body);
+            return Expression.Lambda<T>(merge(first.Body, secondBody), first.Parameters);
+        }
+
+        public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> first, Expression<Func<T, bool>> second)
+        {
+            return first.Compose(second, Expression.And);
+        }
+
+        public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> first, Expression<Func<T, bool>> second)
+        {
+            return first.Compose(second, Expression.Or);
+        }
+    }
+
+    public class ParameterRebinder : ExpressionVisitor
+    {
+        private readonly Dictionary<ParameterExpression, ParameterExpression> map;
+
+        public ParameterRebinder(Dictionary<ParameterExpression, ParameterExpression> map)
+        {
+            this.map = map ?? new Dictionary<ParameterExpression, ParameterExpression>();
+        }
+
+        public static Expression ReplaceParameters(Dictionary<ParameterExpression, ParameterExpression> map, Expression exp)
+        {
+            return new ParameterRebinder(map).Visit(exp);
+        }
+
+        protected override Expression VisitParameter(ParameterExpression p)
+        {
+            ParameterExpression replacement;
+            if (map.TryGetValue(p, out replacement))
+            {
+                p = replacement;
+            }
+            return base.VisitParameter(p);
+        }
+    }
+
+
+
+----------------------------------表达式树 e----------------------------------
+
+
+
+
+
+
+
+----------------------------------O/R Mapping end-------------------------
+
+
+
+----------------------------------框架 s-------------------------
+
+Facade模式（门面层）
+
+1调用 
+abc abc间可相互调用（高内聚）
+
+1调用 facade
+facade 调用 abc  
+
+
+
+基于mvc的框架Catharsis
+
+		ui web model  controller	
+entity						common 
+poco		business			providers
+						interfaces
+		data dao、nhiberante、orm	factories
+
+	  data storage  database、xml、txt
+
+
+
+
+
+----------------------------------框架 s-------------------------
+
+
+
+
+
+
+
+
+
+
